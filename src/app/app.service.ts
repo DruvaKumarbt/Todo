@@ -152,9 +152,9 @@ export class AppService {
 
 
   //get all tasks
-  public getAllTasks(page) {
+  public getAllTasks() {
 
-    let response = this.http.get(`${this.url}/api/v1/task/all/${page}?authToken=${Cookie.get('authtoken')}`);
+    let response = this.http.get(`${this.url}/api/v1/task/all?authToken=${Cookie.get('authtoken')}`);
 
     return response;
 
@@ -198,7 +198,32 @@ export class AppService {
 
     return this.http.put(`${this.url}/api/v1/task/${taskObj.taskId}/edit`, params);
 
-  } // end of signinFunction function.
+  } // end of edit function.
+
+
+  //delete task
+  public deleteTask(taskObj): Observable<any> {
+
+    // friendsList to store in history for undo purpose
+    let friendList = this.getUserInfoFromLocalstorage().friends
+    friendList.push(this.getUserInfoFromLocalstorage().userId)
+
+    friendList = taskObj.type === "public"? friendList : this.getUserInfoFromLocalstorage().userId;
+
+    
+    const params = new HttpParams()
+      .set('title', taskObj.title)
+      .set('tasks', JSON.stringify(taskObj.tasks))
+      .set('type', taskObj.type)
+      .set('modifiedBy', taskObj.modifiedBy)
+      .set('modifiedOn', taskObj.modifiedOn)
+      .set('friends', friendList)
+      .set('authToken', Cookie.get('authtoken'))
+
+
+    return this.http.post(`${this.url}/api/v1/task/${taskObj.taskId}/delete`, params);
+
+  } // end of delete task function
 
    //get all tasks
    public undo() {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener  } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from "./../app.service";
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
     //initializing p to one
     p: number = 1;
     public filter: any;
-
+    public peopleSearch:any;
     //sorting
     key: string = 'createdOn';
     reverse: boolean = false;
@@ -51,6 +51,7 @@ export class HomeComponent implements OnInit {
     public editMode: boolean = false;
     public taskId: string;
     public undoData: any;
+    public taskDetailsToEdit:any;
     // public show: boolean = false;
     public step = 0;
     // nested form related variable
@@ -74,6 +75,18 @@ export class HomeComponent implements OnInit {
 
 
     constructor(public SocketService: SocketService, public snackBar: MatSnackBar, public router: Router, public _route: ActivatedRoute, public appService: AppService) { }
+   
+    //checking for keypress to undo
+    @HostListener('window:keyup', ['$event'])
+
+    handleKeyboardEvent(event: KeyboardEvent) {
+        if(event.getModifierState && event.getModifierState('Control') && event.keyCode===90){
+            
+            this.undo();
+
+        }
+      }
+
 
     ngOnInit() {
         console.log('NG onit was called :');
@@ -91,16 +104,14 @@ export class HomeComponent implements OnInit {
 
         this.getNotify();
 
-        this.getALLUsers();
-
+        
         this.getUserDetails(this.userId);
-
-
+        
         this.getAllTasks()
-
+        
         setTimeout(() => {
-            this.appService.setUserInfoInLocalStorage(this.userInfo);
-        }, 1000);
+            this.getALLUsers();
+        }, 4000);
 
 
     }
@@ -226,6 +237,9 @@ export class HomeComponent implements OnInit {
         this.appService.getUserInfo(id).subscribe(
             data => {
                 this.userInfo = data['data'];
+                setTimeout(() => {
+                    this.appService.setUserInfoInLocalStorage(this.userInfo);
+                }, 2000);
 
             }
         )
@@ -363,9 +377,10 @@ export class HomeComponent implements OnInit {
                 this.snackBar.open(`${message.message}`, "Dismiss", {
                     duration: 5000,
                 });
+
                 this.getAllTasks();
                 this.getALLUsers();
-
+                this.getUserDetails(this.userId);
             });//end subscribe
 
     }// end get message from a user 
@@ -375,12 +390,10 @@ export class HomeComponent implements OnInit {
 
     // get all tasks
     public getAllTasks: any = () => {
-        this.currentPage = 1;
-        this.appService.getAllTasks(1).subscribe(
+        this.appService.getAllTasks().subscribe(
             data => {
                 this.tasks = data['data'];
                 this.length = data['status'];
-                console.log(">>>>>>>>>>>>", this.length);
 
             }
 
@@ -579,8 +592,10 @@ export class HomeComponent implements OnInit {
                             createdOn: Date.now()
                         }
 
-                        this.SocketService.sendNotify(notifyObject)
+                        this.SocketService.sendNotify(notifyObject);
 
+                        // refreshing
+                        this.getAllTasks();
                     }
 
                 } else {
@@ -600,18 +615,20 @@ export class HomeComponent implements OnInit {
             });
 
 
-            // refreshing
-            this.getAllTasks();
-
-
         }, 500);
 
     }
 
+    //function for pre render value to form for editing values
     editValue(task) {
 
+        // setting this variable for passing to delete task function
+        this.taskDetailsToEdit = task;
+
         this.editMode = true;
+
         this.clear();
+
         this.title = task.title;
         this.taskId = task.taskId
         if (task.type == 'private') {
@@ -652,12 +669,14 @@ export class HomeComponent implements OnInit {
                         senderId: this.userId,
                         receiverName: taskObj.createdBy,
                         receiverId: taskObj.createdByUserId,
-                        message: `${this.userInfo.firstName} has Edited task list you created.`,
+                        message: `${this.userInfo.firstName} has Edited ${taskObj.title} tasklist .`,
                         createdOn: Date.now()
                     }
 
-                    this.SocketService.sendNotify(notifyObject)
+                    this.SocketService.sendNotify(notifyObject);
 
+                     // refreshing
+                    this.getAllTasks();
                 }
 
             } else {
@@ -676,11 +695,58 @@ export class HomeComponent implements OnInit {
 
         });
 
-        // refreshing
-        this.getAllTasks();
-
     }
 
+    deleteTask() {
+
+        let taskObj = this.taskDetailsToEdit;
+        taskObj.modifiedBy = this.userInfo.firstName;
+        taskObj.modifiedOn = Date.now();
+        console.log(taskObj);
+        
+        this.appService.deleteTask(taskObj).subscribe((apiResponse) => {
+            if (apiResponse.status === 200) {
+
+                this.snackBar.open(`Task Deleted!`, "Dismiss", {
+                    duration: 5000,
+                });
+
+                if (this.userId !== taskObj.createdByUserId) {
+
+                    // sending notification
+                    let notifyObject = {
+                        senderName: this.userInfo.firstName,
+                        senderId: this.userId,
+                        receiverName: taskObj.createdBy,
+                        receiverId: taskObj.createdByUserId,
+                        message: `${this.userInfo.firstName} has Deleted ${taskObj.title} tasklist.`,
+                        createdOn: Date.now()
+                    }
+
+                    this.SocketService.sendNotify(notifyObject);
+
+                     // refreshing
+                    this.getAllTasks();
+                }
+
+            } else {
+
+                this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
+                    duration: 5000,
+                });
+
+            }
+
+        }, (err) => {
+
+            this.snackBar.open(`some error occured`, "Dismiss", {
+                duration: 5000,
+            });
+
+        });
+
+    }
+    
     ////////////////////////////////add details/////////////////////////////////
 
 
@@ -688,9 +754,6 @@ export class HomeComponent implements OnInit {
         this.editMode = false;
     }
 
-    // toggle() {
-    //     this.show = !this.show;
-    // }
 
     clear() {
 
@@ -725,31 +788,37 @@ export class HomeComponent implements OnInit {
         this.step--;
     }
 
-    getPaginatorData(event) {
-        console.log(event);
-        if (event.pageIndex == this.currentPage + 1) {
-            this.appService.getAllTasks(event.pageIndex).subscribe(
-                data => {
-                    this.tasks = data['data'];
-                    this.length = data['status'];
-                    console.log(">>>>>>>>>>>>", this.length);
-
-                }
-
-            )
-        }
-        else if (event.pageIndex == this.currentPage - 1) {
-
-            this.appService.getAllTasks(event.pageIndex).subscribe(
-                data => {
-                    this.tasks = data['data'];
-                    this.length = data['status'];
-                    console.log(">>>>>>>>>>>>", this.length);
-
-                }
-
-            )
-        }
-        this.currentPage = event.pageIndex;
-    }
+   
+    // logout Function
+    public logout: any = () => {
+    
+        let userId = this.appService.getUserInfoFromLocalstorage().userId
+    
+        this.appService.logout(userId)
+          .subscribe((apiResponse) => {
+    
+            if (apiResponse.status === 200) {
+    
+              Cookie.delete('authtoken');
+    
+              this.SocketService.exitSocket();
+    
+              this.router.navigate(['/sign-in']);
+    
+            } else {
+              this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
+                duration: 5000,
+              });
+    
+            } // end condition
+    
+          }, (err) => {
+            this.snackBar.open(`some error occured`, "Dismiss", {
+              duration: 5000,
+            });
+    
+    
+          });
+    
+      } // end logout
 }

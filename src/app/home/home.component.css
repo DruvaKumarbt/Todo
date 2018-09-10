@@ -16,7 +16,20 @@
     max-width: 500px;
     width: 100%;
   }
-  
+  .mat-card-green-people{
+    background: #acd8c9d6;
+    color: rgba(0,0,0,.54);
+    margin: 20px;
+  }
+
+  .people-search{
+      width: 100%;
+  }
+  .people-ul{
+      display: flex;
+      list-style: none;
+      overflow-x: auto;
+  }
   .example-full-width {
     width: 86%;
   }
@@ -26,6 +39,13 @@
   .add-btn{
       margin:3px;
       margin-top: 30px;
+  }
+  .head-up{
+    margin-top: 6% !important;
+  }
+  .head-down{
+    margin-bottom: 6% !important;
+
   }
   .head{
       margin: 5% 0px;
@@ -48,7 +68,7 @@
   }
 
   .mat-card-primary{
-    background-color: #3f51b5;
+    background-color: white;
   }
   .task-card{
       width: 100%;

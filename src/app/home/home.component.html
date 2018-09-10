@@ -11,6 +11,14 @@
                     <mat-slide-toggle color="primary" checked="checked" [(ngModel)]="private" *ngIf='!editMode'>
                         Private
                     </mat-slide-toggle>
+                    <button mat-icon-button *ngIf='editMode' matTooltip='Delete Task?' color='primary' data-toggle="collapse" data-target="#collapseExample"
+                        aria-expanded="false" aria-controls="collapseExample"><i class="material-icons">delete_outline</i></button>
+
+                </div>
+                <div class="collapse" id="collapseExample">
+                    <div class="card-body">
+                        Do you want to delete this tasklist? <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)="deleteTask()">Yes!</button>
+                    </div>
                 </div>
 
                 <!-- Modal body -->
@@ -29,35 +37,35 @@
                             <input matInput placeholder="Task{{i+1}}" type="text" [(ngModel)]="this['subtask' + x]">
                         </mat-form-field>
 
-                       
+
                         <div *ngIf="this['subtask' + x]">
-                        <div *ngFor="let detail of [1, 2, 3, 4, 5]; let j = index; let first = first; let last = last">
-                            <mat-expansion-panel [expanded]="step === detail" (opened)="setStep(detail)" hideToggle>
-                                <mat-expansion-panel-header>
-                                    <mat-panel-title>
-                                        Detail:{{detail}}
-                                    </mat-panel-title>
-                                    <mat-panel-description>
-                                        {{ this['detail' + i + detail ] }}
-                                    </mat-panel-description>
-                                </mat-expansion-panel-header>
+                            <div *ngFor="let detail of [1, 2, 3, 4, 5]; let j = index; let first = first; let last = last">
+                                <mat-expansion-panel [expanded]="step === detail" (opened)="setStep(detail)" hideToggle>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            Detail:{{detail}}
+                                        </mat-panel-title>
+                                        <mat-panel-description>
+                                            {{ this['detail' + i + detail ] }}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
 
-                                <mat-form-field class="example-full-width1">
-                                    <input matInput placeholder="Detail {{detail}}" type="text" [(ngModel)]="this['detail' + i + detail ]">
-                                </mat-form-field>
+                                    <mat-form-field class="example-full-width1">
+                                        <input matInput placeholder="Detail {{detail}}" type="text" [(ngModel)]="this['detail' + i + detail ]">
+                                    </mat-form-field>
 
-                                <button *ngIf="!last" mat-icon-button color="primary" class="float-right " (click)="nextStep()"> <i
-                                        class="material-icons">
-                                        add
-                                    </i></button>
-                                <mat-action-row *ngIf="last">
-                                    <button mat-button color="warn" (click)="prevStep()"> <i class="material-icons">
-                                            keyboard_arrow_up
+                                    <button *ngIf="!last" mat-icon-button color="primary" class="float-right " (click)="nextStep()"> <i
+                                            class="material-icons">
+                                            add
                                         </i></button>
-                                </mat-action-row>
-                            </mat-expansion-panel>
-                        </div>
-                        <!-- Epansion panel for adding details endds here -->
+                                    <mat-action-row *ngIf="last">
+                                        <button mat-button color="warn" (click)="prevStep()"> <i class="material-icons">
+                                                keyboard_arrow_up
+                                            </i></button>
+                                    </mat-action-row>
+                                </mat-expansion-panel>
+                            </div>
+                            <!-- Epansion panel for adding details endds here -->
                         </div>
                         <hr>
                         <br>
@@ -69,10 +77,6 @@
                                 class="material-icons">
                                 add
                             </i></button>
-                        <!-- <button *ngIf='count != 1' mat-mini-fab class="mat-elevation-z8 add-btn" color='warn' (click)='remove()'> <i
-                                class="material-icons">
-                                close
-                            </i></button> -->
 
                     </div>
                 </div>
@@ -92,89 +96,147 @@
     </div>
     <!-- end of modal -->
 
+
+
+    <!-- Modal  for notification-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Notification</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button mat-raised-button color="primary" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
-        <side-bar></side-bar>
+
         <mat-progress-bar mode="indeterminate" value="40" *ngIf="!users && !userInfo"></mat-progress-bar>
 
         <div class="container">
-            <div class="row">
-                <h2 class="mx-auto head">ToDo</h2>
+            <div *ngIf="userInfo" class="row" style="margin-top:10px">
+                <div class="ml-auto">
+
+                    Welcome, <b>{{userInfo.firstName}}</b> &nbsp;&nbsp;|
+                    <button mat-icon-button matTooltip="Notification" data-toggle="modal" data-target="#exampleModal"><i
+                            class="material-icons" matBadge="4" color="primary" matBadgeOverlap="true"> notifications_none </i></button>
+                    | &nbsp;&nbsp;
+                    <button mat-raised-button class="mat-elevation-z8" matTooltip="Logout" (click)="logout()">
+                        <img src="./../../assets/logout.png" height="20px" alt="">
+                    </button>
+                </div>
+
             </div>
+            <h2 class="text-center head-up"><img src="./../../assets/check.png" alt=""> To</h2>
+            <h2 class="text-center head-down"><img src="./../../assets/check.png" alt=""> Do</h2>
             <br>
-            <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)='undo()'>
-                Ctrl+Z
-            </button>
-            <!-- <div *ngIf="users && userInfo" class="row">
 
-                <div *ngFor="let user of users">
-                    <div *ngIf="userId !== user.userId ">
-                        <mat-card class="card mat-card-green ">
+            <mat-expansion-panel class="mat-elevation-z8">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <i class="material-icons"> person_pin </i>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        Peoples
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
 
-                            <p>{{user.firstName}}</p>
-                            <button *ngIf="!userInfo.request.includes(user.userId) && !userInfo.friends.includes(user.userId) && !userInfo.requested.includes(user.userId)"
-                                mat-raised-button class="mat-elevation-z8" color='primary' (click)="addAsFriend(user.userId, user.firstName)"><i
-                                    class="material-icons">
-                                    person_add
-                                </i></button>
+                <mat-form-field class="text-center people-search">
+                    <input matInput placeholder="Search Peoples" type="text" [(ngModel)]="peopleSearch">
+                </mat-form-field>
 
-                            <button *ngIf="userInfo.requested.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='disabled' disabled>Pending...</button>
+                <mat-spinner *ngIf='!users' [diameter]="100" class="mx-auto"></mat-spinner>
 
-                            <button *ngIf="userInfo.request.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='primary' (click)="addToFriend(user.userId, user.firstName)"><i
-                                    class="material-icons">
-                                    check
-                                </i></button>
+                <div *ngIf="users && userInfo" class="row">
 
-                            <button *ngIf="userInfo.friends.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='primary'><i
-                                    class="material-icons">
-                                    account_circle
-                                </i></button>
-                        </mat-card>
-                    </div>
+                    <ul class="people-ul">
+                        <li *ngFor="let user of users | filter: peopleSearch">
+                            <div *ngIf="userId !== user.userId ">
+
+                                <mat-card class=" mat-card-green-people ">
+
+                                    <p>{{user.firstName}}</p>
+                                    <button *ngIf="!userInfo.request.includes(user.userId) && !userInfo.friends.includes(user.userId) && !userInfo.requested.includes(user.userId)"
+                                        mat-raised-button class="mat-elevation-z8" color='primary' matTooltip="Add as Friend"
+                                        (click)="addAsFriend(user.userId, user.firstName)"><i
+                                            class="material-icons">
+                                            person_add
+                                        </i></button>
+
+                                    <button *ngIf="userInfo.requested.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='disabled' disabled>Pending...</button>
+
+                                    <button *ngIf="userInfo.request.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='primary' (click)="addToFriend(user.userId, user.firstName)"><i
+                                            matTooltip="Accept friend's request" class="material-icons">
+                                            check
+                                        </i></button>
+
+                                    <button *ngIf="userInfo.friends.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='primary'><i
+                                            class="material-icons">
+                                            account_circle
+                                        </i></button>
+                                </mat-card>
+                            </div>
+
+                        </li>
+                    </ul>
 
                 </div>
-            </div>
+
+            </mat-expansion-panel>
             <br><br>
-            <hr><br> -->
+            <hr><br>
             <!-- Tasks -->
 
             <mat-spinner *ngIf='!tasks' [diameter]="100" class="mx-auto"></mat-spinner>
 
-            <div class="row">
-                <!-- <div class="col-md-3">
+            <div *ngIf='tasks' class="row">
+                <div class="col-md-3">
                     <mat-form-field class="example-full-width">
                         <input matInput placeholder="Search" type="text" [(ngModel)]="filter">
                     </mat-form-field>
 
-                </div> -->
+                </div>
 
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <!-- pgination -->
-                    <mat-paginator [length]="length" [pageSize]="pageSize" [pageIndex]="currentPage"  (page)="pageEvent = getPaginatorData($event)"> </mat-paginator>
+                    <pagination-controls (pageChange)="p = $event"></pagination-controls>
                 </div>
 
 
-                <!-- <div class="col-md-3">
+                <div class="col-md-3">
+                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' matTooltip="SortBy Title" (click)="sort('title')">Title</button>
 
-                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)="sort('title')">Title</button>
-                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)="sort('createdOn')">
-                        createdOn
+                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' matTooltip="SortBy Date" (click)="sort('createdOn')">createdOn
                     </button>
-                </div> -->
+
+                </div>
             </div>
 
             <hr>
-            <br>
 
             <!-- for loop starts here -->
-            <div class="row" *ngFor='let task of tasks  | orderBy: key '>
+            <button mat-raised-button class="mat-elevation-z8 float-right" color='primary' matTooltip="Ctrl + Z" (click)='undo()'><i
+                    class="material-icons">undo</i></button>
+
+            <div class="row" *ngFor='let task of tasks  | orderBy: key | filter:filter | paginate: { itemsPerPage: 10, currentPage: p }'
+                style="margin-top:60px">
 
 
                 <div *ngIf="task.type === 'public'" class="mx-auto div-width">
 
 
-                    <mat-card class="card mat-card-green task-card">
+                    <mat-card class="card mat-card-primary task-card mat-elevation-z8">
                         <h4 class="task-head">{{ task.title }}</h4>
-                        <button mat-icon-button color="primary" *ngIf="userId === task.createdByUserId || userInfo.friends.includes(task.createdByUserId)"
+                        <button mat-icon-button matTooltip="Edit" color="primary" *ngIf="userId === task.createdByUserId || userInfo.friends.includes(task.createdByUserId)"
                             class="float-right" data-toggle="modal" data-target="#myModal" (click)="editValue(task)">
                             <i class="material-icons">
                                 edit
@@ -212,9 +274,10 @@
 
                 <div *ngIf="task.type === 'private' && userId === task.createdByUserId" class="mx-auto div-width">
 
-                    <mat-card class="card mat-card-primary ">
+                    <mat-card class="card mat-card-green mat-elevation-z8">
                         <h4 class="task-head">{{ task.title }}</h4>
-                        <button mat-icon-button color="link" (click)="editValue(task)" data-toggle="modal" data-target="#myModal" class="float-right">
+                        <button mat-icon-button color="link" (click)="editValue(task)" data-toggle="modal" data-target="#myModal" class="float-right"
+                            matTooltip="Edit">
                             <i class="material-icons">
                                 edit
                             </i>
@@ -254,12 +317,12 @@
 
     </div>
     <button mat-fab class="mat-elevation-z8 add-task d-none d-md-block" color='primary' data-toggle="modal" data-target="#myModal"
-        (click)="clear(); editModeOff()">
+        (click)="clear(); editModeOff()" matTooltip="Add a Task">
         <i class="material-icons">
             add
         </i></button>
     <button mat-mini-fab class="mat-elevation-z8 add-task d-xs-inline d-sm-inline d-md-none" color='primary' data-toggle="modal"
-        (click)="clear(); editModeOff()" data-target="#myModal"><i class="material-icons">
+        (click)="clear(); editModeOff()" data-target="#myModal"><i class="material-icons" matTooltip="Add a Task">
             add
         </i></button>
 
