@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AppService } from './app.service'
 
 
 import * as io from 'socket.io-client';
@@ -17,7 +18,7 @@ export class SocketService {
 
   private socket;
 
-  constructor(public http: HttpClient) {  
+  constructor(public http: HttpClient, public appService:AppService) {  
     // connection is being created.
     // that handshake
     this.socket = io(this.url);
@@ -92,6 +93,32 @@ export class SocketService {
   } // end notify
 
 
+  //send notification data for changes in task beeen made
+  public taskNotify = (notifyObject) => {
+
+    // friendsList to store in history for undo purpose
+    let friendList = this.appService.getUserInfoFromLocalstorage().friends
+    friendList.push(this.appService.getUserInfoFromLocalstorage().userId)
+
+    notifyObject.receiverId = friendList
+    
+    // friendList = taskObj.type === "public"? friendList : this.appService.getUserInfoFromLocalstorage().userId;
+
+    this.socket.emit('task-notify', notifyObject);
+
+  } // end send TaskNotify
+
+  public taskChanges = () => {
+
+    return Observable.create((observer) => {
+      
+      this.socket.on("task-changes", (data) => {
+
+        observer.next(data);
+
+      }); // end Socket
+    }); // end Observable
+  } // end notify
 
   public exitSocket = () =>{
 

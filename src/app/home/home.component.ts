@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener  } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from "./../app.service";
@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
     //initializing p to one
     p: number = 1;
     public filter: any;
-    public peopleSearch:any;
+    public peopleSearch: any;
     //sorting
     key: string = 'createdOn';
     reverse: boolean = false;
@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit {
     public editMode: boolean = false;
     public taskId: string;
     public undoData: any;
-    public taskDetailsToEdit:any;
+    public taskDetailsToEdit: any;
     // public show: boolean = false;
     public step = 0;
     // nested form related variable
@@ -75,17 +75,17 @@ export class HomeComponent implements OnInit {
 
 
     constructor(public SocketService: SocketService, public snackBar: MatSnackBar, public router: Router, public _route: ActivatedRoute, public appService: AppService) { }
-   
+
     //checking for keypress to undo
     @HostListener('window:keyup', ['$event'])
 
     handleKeyboardEvent(event: KeyboardEvent) {
-        if(event.getModifierState && event.getModifierState('Control') && event.keyCode===90){
-            
+        if (event.getModifierState && event.getModifierState('Control') && event.keyCode === 90) {
+
             this.undo();
 
         }
-      }
+    }
 
 
     ngOnInit() {
@@ -104,11 +104,12 @@ export class HomeComponent implements OnInit {
 
         this.getNotify();
 
-        
+        this.getTaskChanges();
+
         this.getUserDetails(this.userId);
-        
+
         this.getAllTasks()
-        
+
         setTimeout(() => {
             this.getALLUsers();
         }, 4000);
@@ -128,11 +129,24 @@ export class HomeComponent implements OnInit {
                 console.log(this.undoData);
 
                 if (this.undoData.status == 200) {
-                    this.getAllTasks();
 
                     this.snackBar.open(`${this.undoData.message}`, "Dismiss", {
                         duration: 2000,
                     });
+
+                    // sending notification
+                    let notifyObject = {
+                        senderName: this.userInfo.firstName,
+                        senderId: this.userId,
+                        receiverName: '',
+                        receiverId: '',
+                        message: `${this.userInfo.firstName} has Undo a tasklist.`,
+                        createdOn: Date.now()
+                    }
+
+                    this.SocketService.taskNotify(notifyObject);
+
+                    this.getAllTasks();
 
                 } else if (this.undoData.status == 404) {
 
@@ -366,6 +380,7 @@ export class HomeComponent implements OnInit {
         }, 1000);
     }
 
+    /////////////////////////////////////////Noyification related code//////////////////////////////////
 
     public getNotify: any = () => {
 
@@ -378,9 +393,26 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
-                this.getAllTasks();
-                this.getALLUsers();
+
                 this.getUserDetails(this.userId);
+            });//end subscribe
+
+    }// end get message from a user 
+
+    public getTaskChanges: any = () => {
+
+        this.SocketService.taskChanges()
+            .subscribe((data) => {
+                if (data.receiverId.includes(this.userId)) {
+                    let message = data;
+
+                    this.snackBar.open(`${message.message}`, "Dismiss", {
+                        duration: 5000,
+                    });
+
+                    this.getAllTasks();
+                    this.getALLUsers();
+                }
             });//end subscribe
 
     }// end get message from a user 
@@ -390,20 +422,19 @@ export class HomeComponent implements OnInit {
 
     // get all tasks
     public getAllTasks: any = () => {
+
         this.appService.getAllTasks().subscribe(
+
             data => {
                 this.tasks = data['data'];
-                this.length = data['status'];
-
             }
-
         )
+    }//end of get all task
 
-    }
 
-
-    //create a task function
+    //create task function
     public addTask: any = () => {
+
         this.taskList = [];
 
         if (this.title) {
@@ -427,7 +458,6 @@ export class HomeComponent implements OnInit {
             } else {
                 taskObj.type = 'public'
             }
-
 
 
             // Mapping all the NgModels to TaskObj to send them to backend
@@ -457,6 +487,7 @@ export class HomeComponent implements OnInit {
 
 
             if (this.editMode === false) {
+
                 //If edit mode is false the create task
                 this.appService.createTask(taskObj).subscribe(
                     apiResponse => {
@@ -470,7 +501,22 @@ export class HomeComponent implements OnInit {
                             this.spinner = false;
                             this.taskCreationUpdate = true;
 
-                            window.location.reload()
+
+                            // sending notification
+                            let notifyObject = {
+                                senderName: this.userInfo.firstName,
+                                senderId: this.userId,
+                                receiverName: taskObj.createdBy,
+                                receiverId: taskObj.createdByUserId,
+                                message: `${this.userInfo.firstName} has created ${this.title} tasklist.`,
+                                createdOn: Date.now()
+                            }
+
+                            this.SocketService.taskNotify(notifyObject);
+
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1000);
 
                         } else {
 
@@ -493,6 +539,7 @@ export class HomeComponent implements OnInit {
 
                 taskObj.taskId = this.taskId;
                 taskObj.modifiedBy = this.userInfo.firstName;
+
                 //If edit mode is true then edit task
                 this.appService.editTask(taskObj).subscribe((apiResponse) => {
                     if (apiResponse.status === 200) {
@@ -504,22 +551,20 @@ export class HomeComponent implements OnInit {
                         this.spinner = false;
                         this.taskCreationUpdate = true;
 
-                        if (this.userId !== taskObj.createdByUserId) {
 
-                            // sending notification
-                            let notifyObject = {
-                                senderName: this.userInfo.firstName,
-                                senderId: this.userId,
-                                receiverName: taskObj.createdBy,
-                                receiverId: taskObj.createdByUserId,
-                                message: `${this.userInfo.firstName} has Edited task list you created.`,
-                                createdOn: Date.now()
-                            }
-
-                            this.SocketService.sendNotify(notifyObject);
-
-
+                        // sending notification
+                        let notifyObject = {
+                            senderName: this.userInfo.firstName,
+                            senderId: this.userId,
+                            receiverName: taskObj.createdBy,
+                            receiverId: taskObj.createdByUserId,
+                            message: `${this.userInfo.firstName} has Edited ${taskObj.title} tasklist. `,
+                            createdOn: Date.now()
                         }
+
+                        this.SocketService.taskNotify(notifyObject);
+
+
                         setTimeout(() => {
                             window.location.reload()
                         }, 1000);
@@ -553,6 +598,7 @@ export class HomeComponent implements OnInit {
 
     }
 
+
     // nested form
     remove(i: number) {
         this.count--
@@ -566,6 +612,7 @@ export class HomeComponent implements OnInit {
     taskChecked(task, i) {
 
         let taskObj = task;
+        let removedTask =  task.tasks[i].task
         taskObj.modifiedBy = this.userInfo.firstName;
         taskObj.modifiedOn = Date.now();
         setTimeout(() => {
@@ -580,23 +627,21 @@ export class HomeComponent implements OnInit {
                         duration: 5000,
                     });
 
-                    if (this.userId !== taskObj.createdByUserId) {
 
-                        // sending notification
-                        let notifyObject = {
-                            senderName: this.userInfo.firstName,
-                            senderId: this.userId,
-                            receiverName: taskObj.createdBy,
-                            receiverId: taskObj.createdByUserId,
-                            message: `${this.userInfo.firstName} has Edited task list you created.`,
-                            createdOn: Date.now()
-                        }
-
-                        this.SocketService.sendNotify(notifyObject);
-
-                        // refreshing
-                        this.getAllTasks();
+                    // sending notification
+                    let notifyObject = {
+                        senderName: this.userInfo.firstName,
+                        senderId: this.userId,
+                        receiverName: taskObj.createdBy,
+                        receiverId: taskObj.createdByUserId,
+                        message: `${this.userInfo.firstName} has Checked " ${removedTask} " task from" ${taskObj.title} " tasklist. `,
+                        createdOn: Date.now()
                     }
+
+                    this.SocketService.taskNotify(notifyObject);
+
+                    // refreshing
+                    this.getAllTasks();
 
                 } else {
 
@@ -641,7 +686,19 @@ export class HomeComponent implements OnInit {
         task.tasks.map(x => {
 
             this[`subtask${i}`] = x.task
+
+            x.subtask.filter(y => {
+                for (let j = 1; j <= 5; j++) {
+
+                    this[`detail${i - 1}${j}`] = x.subtask[j - 1]
+
+                }
+
+
+            })
+
             i++
+
         })
 
     }
@@ -649,6 +706,7 @@ export class HomeComponent implements OnInit {
     subtaskChecked(task, i, j) {
 
         let taskObj = task;
+        let removedSubtask = task.tasks[i].subtask[j]
         taskObj.modifiedBy = this.userInfo.firstName;
         taskObj.modifiedOn = Date.now();
         task.tasks[i].subtask.splice(j, 1)
@@ -661,23 +719,21 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
-                if (this.userId !== taskObj.createdByUserId) {
 
-                    // sending notification
-                    let notifyObject = {
-                        senderName: this.userInfo.firstName,
-                        senderId: this.userId,
-                        receiverName: taskObj.createdBy,
-                        receiverId: taskObj.createdByUserId,
-                        message: `${this.userInfo.firstName} has Edited ${taskObj.title} tasklist .`,
-                        createdOn: Date.now()
-                    }
-
-                    this.SocketService.sendNotify(notifyObject);
-
-                     // refreshing
-                    this.getAllTasks();
+                // sending notification
+                let notifyObject = {
+                    senderName: this.userInfo.firstName,
+                    senderId: this.userId,
+                    receiverName: taskObj.createdBy,
+                    receiverId: taskObj.createdByUserId,
+                    message: `${this.userInfo.firstName} has Checked " ${removedSubtask} " from " ${taskObj.title} " tasklist.`,
+                    createdOn: Date.now()
                 }
+
+                this.SocketService.taskNotify(notifyObject);
+
+                // refreshing
+                this.getAllTasks();
 
             } else {
 
@@ -702,32 +758,31 @@ export class HomeComponent implements OnInit {
         let taskObj = this.taskDetailsToEdit;
         taskObj.modifiedBy = this.userInfo.firstName;
         taskObj.modifiedOn = Date.now();
-        console.log(taskObj);
-        
+
         this.appService.deleteTask(taskObj).subscribe((apiResponse) => {
+            console.log(apiResponse);
+
             if (apiResponse.status === 200) {
 
                 this.snackBar.open(`Task Deleted!`, "Dismiss", {
                     duration: 5000,
                 });
 
-                if (this.userId !== taskObj.createdByUserId) {
 
-                    // sending notification
-                    let notifyObject = {
-                        senderName: this.userInfo.firstName,
-                        senderId: this.userId,
-                        receiverName: taskObj.createdBy,
-                        receiverId: taskObj.createdByUserId,
-                        message: `${this.userInfo.firstName} has Deleted ${taskObj.title} tasklist.`,
-                        createdOn: Date.now()
-                    }
-
-                    this.SocketService.sendNotify(notifyObject);
-
-                     // refreshing
-                    this.getAllTasks();
+                // sending notification
+                let notifyObject = {
+                    senderName: this.userInfo.firstName,
+                    senderId: this.userId,
+                    receiverName: taskObj.createdBy,
+                    receiverId: taskObj.createdByUserId,
+                    message: `${this.userInfo.firstName} has Deleted ${taskObj.title} tasklist.`,
+                    createdOn: Date.now()
                 }
+
+                this.SocketService.taskNotify(notifyObject);
+
+                // refreshing
+                window.location.reload()
 
             } else {
 
@@ -746,7 +801,7 @@ export class HomeComponent implements OnInit {
         });
 
     }
-    
+
     ////////////////////////////////add details/////////////////////////////////
 
 
@@ -788,37 +843,37 @@ export class HomeComponent implements OnInit {
         this.step--;
     }
 
-   
+
     // logout Function
     public logout: any = () => {
-    
+
         let userId = this.appService.getUserInfoFromLocalstorage().userId
-    
+
         this.appService.logout(userId)
-          .subscribe((apiResponse) => {
-    
-            if (apiResponse.status === 200) {
-    
-              Cookie.delete('authtoken');
-    
-              this.SocketService.exitSocket();
-    
-              this.router.navigate(['/sign-in']);
-    
-            } else {
-              this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
-                duration: 5000,
-              });
-    
-            } // end condition
-    
-          }, (err) => {
-            this.snackBar.open(`some error occured`, "Dismiss", {
-              duration: 5000,
+            .subscribe((apiResponse) => {
+
+                if (apiResponse.status === 200) {
+
+                    Cookie.delete('authtoken');
+
+                    this.SocketService.exitSocket();
+
+                    this.router.navigate(['/sign-in']);
+
+                } else {
+                    this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
+                        duration: 5000,
+                    });
+
+                } // end condition
+
+            }, (err) => {
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+
+
             });
-    
-    
-          });
-    
-      } // end logout
+
+    } // end logout
 }
