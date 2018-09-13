@@ -49,7 +49,7 @@ export class AppService {
 
   }
 
-  //get all users
+  //get users details
   public getUserInfo(id) {
 
     let response = this.http.get(`${this.url}/api/v1/users/${id}/details?authToken=${Cookie.get('authtoken')}`);
@@ -225,7 +225,7 @@ export class AppService {
 
   } // end of delete task function
 
-   //get all tasks
+   //Undo tasks
    public undo() {
 
     let response = this.http.get(`${this.url}/api/v1/task/${this.getUserInfoFromLocalstorage().userId}/undo?authToken=${Cookie.get('authtoken')}`);
@@ -233,6 +233,17 @@ export class AppService {
     return response;
 
   }
+
+  //get notification for user
+  public getUserNotification(id) {
+
+    let response = this.http.get(`${this.url}/api/v1/task/${id}/notification?authToken=${Cookie.get('authtoken')}`);
+
+    return response;
+
+  }
+
+
 
   private handleError(err: HttpErrorResponse) {
 

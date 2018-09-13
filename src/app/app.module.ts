@@ -16,11 +16,15 @@ import { HomeComponent } from './home/home.component';
 import { SharedModule } from "./shared/shared.module";
 import { SocketService } from './socket.service';
 import { AppService } from './app.service';
+import { Error404Component } from './error404/error404.component';
+import { Error500Component } from './error500/error500.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
+    Error404Component,
+    Error500Component,
   ],
   imports: [
     BrowserModule,
@@ -49,8 +53,9 @@ import { AppService } from './app.service';
     RouterModule.forRoot([
       { path: 'sign-in', component: SigninComponent, pathMatch: 'full' },
       { path: 'home', component:HomeComponent},
+      { path: '500', component:Error500Component},
       { path: '', redirectTo: 'login', pathMatch: 'full' },
-      { path: '**', component: SigninComponent }
+      { path: '**', component: Error404Component }
     ]),
     SharedModule
   ],

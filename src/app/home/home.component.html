@@ -109,7 +109,19 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    ...
+                     <mat-progress-bar mode="indeterminate" *ngIf="!notifications"></mat-progress-bar>
+
+                    <div *ngIf="notifications" class="container">
+                        <div class="row" *ngFor="let notify of notifications.slice().reverse()">
+                                
+                            <h6 class="lift-up">
+                                    <i class="material-icons" >list_alt</i>
+
+                                {{ notify }}</h6>
+                            <hr>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button mat-raised-button color="primary" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -128,7 +140,7 @@
 
                     Welcome, <b>{{userInfo.firstName}}</b> &nbsp;&nbsp;|
                     <button mat-icon-button matTooltip="Notification" data-toggle="modal" data-target="#exampleModal"><i
-                            class="material-icons" matBadge="4" color="primary" matBadgeOverlap="true"> notifications_none </i></button>
+                            class="material-icons" matBadge="{{notificationCount}}" color="primary" matBadgeOverlap="true" (click)='clearCount()'> notifications_none </i></button>
                     | &nbsp;&nbsp;
                     <button mat-raised-button class="mat-elevation-z8" matTooltip="Logout" (click)="logout()">
                         <img src="./../../assets/logout.png" height="20px" alt="">
@@ -257,13 +269,16 @@
                         <hr>
                         <ul class="task-ul">
                             <li *ngFor='let subtask of task.tasks; let i = index'>
-                                <mat-checkbox matTooltip="Mark Complete" class="example-margin" color="primary" (click)="taskChecked(task,i)" [disabled]="userId !== task.createdByUserId && !userInfo.friends.includes(task.createdByUserId)">
+                                <mat-checkbox matTooltip="Mark Complete" class="example-margin" color="primary" (change)="taskChecked(task,i)" [disabled]="userId !== task.createdByUserId && !userInfo.friends.includes(task.createdByUserId)">
                                     {{ subtask.task }}
                                 </mat-checkbox>
 
                                 <ul>
-                                    <li class="subtask-ul" *ngFor='let x of subtask.subtask; let j = index' matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)">
-                                        {{x}}
+                                    <li class="subtask-ul" *ngFor='let x of subtask.subtask; let j = index'>
+                                        <button class="costum-checkBox"  matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)" [disabled]="userId !== task.createdByUserId && !userInfo.friends.includes(task.createdByUserId)">
+                                            {{x}}
+                                        </button>
+                                        
                                     </li>
                                 </ul>
                                 <hr>

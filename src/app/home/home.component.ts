@@ -13,12 +13,14 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
     styleUrls: ['./home.component.css'],
     providers: [SocketService]  //very important line if not included socket code will not hit for first time.
 })
+
 export class HomeComponent implements OnInit {
 
     //initializing p to one
     p: number = 1;
     public filter: any;
     public peopleSearch: any;
+
     //sorting
     key: string = 'createdOn';
     reverse: boolean = false;
@@ -52,11 +54,11 @@ export class HomeComponent implements OnInit {
     public taskId: string;
     public undoData: any;
     public taskDetailsToEdit: any;
-    // public show: boolean = false;
     public step = 0;
-    // nested form related variable
+
+    // Modal for create and update tasklist variables
     public count: number = 1;
-    taskNumberIds: number[] = [1];
+    public taskNumberIds: number[] = [1];
     public taskDetailsObj: any;
     public taskList: string[];
     public subtask1: any;
@@ -70,7 +72,10 @@ export class HomeComponent implements OnInit {
     public subtask9: any;
     public subtask10: any;
 
-
+    //notification related variables
+    public notifications: any[];
+    public notificationCount: number = null;
+    public audio:any;
 
 
 
@@ -85,11 +90,11 @@ export class HomeComponent implements OnInit {
             this.undo();
 
         }
-    }
+    }//end of host listener
 
 
     ngOnInit() {
-        console.log('NG onit was called :');
+
         this.authToken = Cookie.get('authtoken');
 
         this.userId = this.appService.getUserInfoFromLocalstorage().userId;
@@ -110,23 +115,29 @@ export class HomeComponent implements OnInit {
 
         this.getAllTasks()
 
+        //Delay to increase perfromance at start
         setTimeout(() => {
+
             this.getALLUsers();
+
         }, 4000);
 
+        setTimeout(() => {
 
+            this.getNotification(this.userId);
+
+        }, 8000);
     }
 
 
     //undo button
-    // Get all users
     undo() {
 
         this.appService.undo().subscribe(
             (data) => {
 
                 this.undoData = data
-                console.log(this.undoData);
+
 
                 if (this.undoData.status == 200) {
 
@@ -158,12 +169,20 @@ export class HomeComponent implements OnInit {
                     this.snackBar.open(`Some Error occured`, "Dismiss", {
                         duration: 2000,
                     });
+
+                    setTimeout(() => {
+                        this.router.navigate(['/500'])
+                    }, 500);
                 }
             }, (err) => {
 
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
                 });
+
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
 
             });
 
@@ -239,9 +258,20 @@ export class HomeComponent implements OnInit {
 
         this.appService.getAllUsers().subscribe(
             data => {
+
                 this.users = data['data'];
-            }
-        )
+
+            },(err) => {
+
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+
+            });
 
     }//end of get all users
 
@@ -250,13 +280,26 @@ export class HomeComponent implements OnInit {
 
         this.appService.getUserInfo(id).subscribe(
             data => {
+
                 this.userInfo = data['data'];
+
                 setTimeout(() => {
+
                     this.appService.setUserInfoInLocalStorage(this.userInfo);
+
                 }, 2000);
 
-            }
-        )
+            },(err) => {
+
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+
+            });
 
     }
 
@@ -289,6 +332,10 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+
             }
 
         }, (err) => {
@@ -296,6 +343,10 @@ export class HomeComponent implements OnInit {
             this.snackBar.open(`some error occured`, "Dismiss", {
                 duration: 5000,
             });
+
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
 
         });
 
@@ -324,6 +375,9 @@ export class HomeComponent implements OnInit {
                 duration: 5000,
             });
 
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
         });
 
         // refreshing
@@ -363,6 +417,9 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
             }
 
         }, (err) => {
@@ -370,6 +427,10 @@ export class HomeComponent implements OnInit {
             this.snackBar.open(`some error occured`, "Dismiss", {
                 duration: 5000,
             });
+
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
 
         });
 
@@ -393,27 +454,62 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
+                // pushing data to notification array
+                this.notifications.push(message.message);
 
+                this.notificationCount++;
                 this.getUserDetails(this.userId);
+
+            }, (err) => {
+
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+    
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+    
             });//end subscribe
 
     }// end get message from a user 
 
     public getTaskChanges: any = () => {
 
-        this.SocketService.taskChanges()
-            .subscribe((data) => {
+        this.SocketService.taskChanges().subscribe((data) => {
+
                 if (data.receiverId.includes(this.userId)) {
+
                     let message = data;
 
                     this.snackBar.open(`${message.message}`, "Dismiss", {
                         duration: 5000,
                     });
 
+                    // pushing data to notification array
+                    this.notifications.push(message.message);
+                    
+                    this.audio = new Audio();
+                    this.audio.src = "../../../assets/light.mp3";
+                    this.audio.load();
+                    this.audio.play();
+
                     this.getAllTasks();
                     this.getALLUsers();
+                    this.notificationCount++;
+
                 }
-            });//end subscribe
+            }, (err) => {
+
+            this.snackBar.open(`some error occured`, "Dismiss", {
+                duration: 5000,
+            });
+
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
+
+        });//end subscribe
 
     }// end get message from a user 
 
@@ -426,9 +522,21 @@ export class HomeComponent implements OnInit {
         this.appService.getAllTasks().subscribe(
 
             data => {
+
                 this.tasks = data['data'];
-            }
-        )
+
+            }, (err) => {
+
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+    
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+    
+            });
+        
     }//end of get all task
 
 
@@ -504,6 +612,7 @@ export class HomeComponent implements OnInit {
 
                             // sending notification
                             let notifyObject = {
+                                type: taskObj.type,
                                 senderName: this.userInfo.firstName,
                                 senderId: this.userId,
                                 receiverName: taskObj.createdBy,
@@ -524,6 +633,9 @@ export class HomeComponent implements OnInit {
                                 duration: 5000,
                             });
 
+                            setTimeout(() => {
+                                this.router.navigate(['/500'])
+                            }, 500);
                         }
 
                     }, (err) => {
@@ -532,6 +644,9 @@ export class HomeComponent implements OnInit {
                             duration: 5000,
                         });
 
+                        setTimeout(() => {
+                            this.router.navigate(['/500'])
+                        }, 500);
                     });//end of create task
 
 
@@ -554,6 +669,7 @@ export class HomeComponent implements OnInit {
 
                         // sending notification
                         let notifyObject = {
+                            type: taskObj.type,
                             senderName: this.userInfo.firstName,
                             senderId: this.userId,
                             receiverName: taskObj.createdBy,
@@ -575,6 +691,10 @@ export class HomeComponent implements OnInit {
                             duration: 5000,
                         });
 
+                        setTimeout(() => {
+                            this.router.navigate(['/500'])
+                        }, 500);
+
                     }
 
                 }, (err) => {
@@ -582,6 +702,10 @@ export class HomeComponent implements OnInit {
                     this.snackBar.open(`some error occured`, "Dismiss", {
                         duration: 5000,
                     });
+
+                    setTimeout(() => {
+                        this.router.navigate(['/500'])
+                    }, 500);
 
                 });
 
@@ -612,7 +736,7 @@ export class HomeComponent implements OnInit {
     taskChecked(task, i) {
 
         let taskObj = task;
-        let removedTask =  task.tasks[i].task
+        let removedTask = task.tasks[i].task
         taskObj.modifiedBy = this.userInfo.firstName;
         taskObj.modifiedOn = Date.now();
         setTimeout(() => {
@@ -630,6 +754,7 @@ export class HomeComponent implements OnInit {
 
                     // sending notification
                     let notifyObject = {
+                        type: taskObj.type,
                         senderName: this.userInfo.firstName,
                         senderId: this.userId,
                         receiverName: taskObj.createdBy,
@@ -649,6 +774,10 @@ export class HomeComponent implements OnInit {
                         duration: 5000,
                     });
 
+                    setTimeout(() => {
+                        this.router.navigate(['/500'])
+                    }, 500);
+
                 }
 
             }, (err) => {
@@ -656,6 +785,10 @@ export class HomeComponent implements OnInit {
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
                 });
+
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
 
             });
 
@@ -722,6 +855,7 @@ export class HomeComponent implements OnInit {
 
                 // sending notification
                 let notifyObject = {
+                    type: taskObj.type,
                     senderName: this.userInfo.firstName,
                     senderId: this.userId,
                     receiverName: taskObj.createdBy,
@@ -741,6 +875,10 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+
             }
 
         }, (err) => {
@@ -748,6 +886,11 @@ export class HomeComponent implements OnInit {
             this.snackBar.open(`some error occured`, "Dismiss", {
                 duration: 5000,
             });
+
+
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
 
         });
 
@@ -771,6 +914,7 @@ export class HomeComponent implements OnInit {
 
                 // sending notification
                 let notifyObject = {
+                    type: taskObj.type,
                     senderName: this.userInfo.firstName,
                     senderId: this.userId,
                     receiverName: taskObj.createdBy,
@@ -789,6 +933,10 @@ export class HomeComponent implements OnInit {
                 this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
                     duration: 5000,
                 });
+                
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
 
             }
 
@@ -798,9 +946,42 @@ export class HomeComponent implements OnInit {
                 duration: 5000,
             });
 
+            setTimeout(() => {
+                this.router.navigate(['/500'])
+            }, 500);
+
         });
 
     }
+
+    //code to get last 10 notification
+
+    getNotification(id) {
+
+        this.appService.getUserNotification(id).subscribe(
+            data => {
+                let response = data['data']
+                
+                this.notifications = []
+                response.map(x=>{
+                    this.notifications.unshift(x.message);
+                });
+                
+            }, (err) => {
+
+                this.snackBar.open(`some error occured`, "Dismiss", {
+                    duration: 5000,
+                });
+    
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
+    
+            });
+
+
+    }
+
 
     ////////////////////////////////add details/////////////////////////////////
 
@@ -829,6 +1010,11 @@ export class HomeComponent implements OnInit {
             }
         }
 
+    }
+
+    // clearing notification count
+    clearCount() {
+        this.notificationCount = null;
     }
 
     setStep(index: number) {
@@ -872,8 +1058,13 @@ export class HomeComponent implements OnInit {
                     duration: 5000,
                 });
 
+                setTimeout(() => {
+                    this.router.navigate(['/500'])
+                }, 500);
 
             });
 
     } // end logout
-}
+
+
+}// end of export class

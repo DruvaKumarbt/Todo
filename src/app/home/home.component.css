@@ -82,6 +82,13 @@
         text-overflow: ellipsis;
     
   }
+
+  .costum-checkBox{
+    background: transparent;
+    border: none;
+
+  }
+
   .task-ul{
       height: 150px;
       font-size: smaller;

@@ -75,7 +75,7 @@ export class SocketService {
   
 
   public sendNotify = (notifyObject) => {
-
+    
     this.socket.emit('notify', notifyObject);
 
   } // end send notify
@@ -101,10 +101,11 @@ export class SocketService {
     friendList.push(this.appService.getUserInfoFromLocalstorage().userId)
 
     notifyObject.receiverId = friendList
+    console.log(notifyObject);
     
-    // friendList = taskObj.type === "public"? friendList : this.appService.getUserInfoFromLocalstorage().userId;
-
-    this.socket.emit('task-notify', notifyObject);
+    if(notifyObject.type === "public"){
+      this.socket.emit('task-notify', notifyObject);
+    }
 
   } // end send TaskNotify
 
