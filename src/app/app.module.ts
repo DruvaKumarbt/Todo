@@ -54,7 +54,7 @@ import { Error500Component } from './error500/error500.component';
       { path: 'sign-in', component: SigninComponent, pathMatch: 'full' },
       { path: 'home', component:HomeComponent},
       { path: '500', component:Error500Component},
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: '', redirectTo: 'sign-in', pathMatch: 'full' },
       { path: '**', component: Error404Component }
     ]),
     SharedModule

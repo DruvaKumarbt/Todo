@@ -67,7 +67,7 @@ export class ChangePasswordComponent implements OnInit {
      
             setTimeout(() => {
 
-              this.router.navigate(['/login']);
+              this.router.navigate(['/sign-in']);
 
             }, 2000);
 
