@@ -6,8 +6,12 @@
       <!-- Signin Input -->
       <div class="col align-self-center">
         <div class="container">
+          <h1 class="text-center head-up"><img class="anime" src="./../../assets/check.png" alt=""> To</h1>
+          <h1 class="text-center head-down"><img class="anime" src="./../../assets/check.png" alt=""> Do</h1>
+          <div class="row">
+            <div class="col-md-6">
 
-          <h1 class="text-center" style="margin-top:10%"> Welcome</h1>
+          <h3 class="text-center" style="margin-top:10%"> Welcome</h3>
           <br>
           <h6>Please Signin to continue.</h6>
           <br>
@@ -30,9 +34,60 @@
           <h6 style="cursor:pointer" [routerLink]="['/forgot-password']">Forgot password.</h6>
           <br>
           <button mat-raised-button class="singinbtn mat-elevation-z8" color='primary' (click)="submit()"><i class="material-icons">navigate_next</i></button>
+          <br><hr>
+        </div>
+
+        <div class="col-md-6">
+          <div class=" text-center" style="margin-top:10%">
+            
+            <b> To-Do is a cloud-based task management application. It allows users to manage their tasks from a smartphone, tablet and computer. </b>
+          </div>
+          <hr>
+
+          <mat-card class="card mat-card-primary task-card mat-elevation-z8 anime1">
+              <h4 class="task-head">Tasks</h4>
+              <button mat-icon-button matTooltip="Edit" color="primary" class="float-right" ><i class="material-icons"> edit</i></button>
+              <br>
+              <br>
+             
+              <hr>
+              <ul class="task-ul">
+                  <li>
+                      <mat-checkbox matTooltip="Mark Complete" class="example-margin" color="primary">
+                          My Day
+                      </mat-checkbox>
+
+                      <ul>
+                          <li class="subtask-ul" >
+                              <button class="costum-checkBox"  matTooltip="Mark Complete" >
+                                Finalize Design.
+                              </button>
+                          </li>
+                          <li class="subtask-ul" >
+                              <button class="costum-checkBox"  matTooltip="Mark Complete" >
+                                Intialize server.
+                              </button>
+                          </li>
+                          <li class="subtask-ul" >
+                              <button class="costum-checkBox"  matTooltip="Mark Complete" >
+                                Send mail to the team.
+                              </button>
+                          </li>
+                          <li class="subtask-ul" >
+                              <button class="costum-checkBox"  matTooltip="Mark Complete" >
+                                Make Documentation for the same
+                              </button>
+                          </li>
+                      </ul>
+                  </li>
+              </ul>
+          </mat-card>
+
           <br><br>
         </div>
       </div>
+    </div>
+    </div>
     </div>
   </div>
 

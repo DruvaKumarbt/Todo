@@ -11,9 +11,11 @@ export class Error500Component implements OnInit {
   constructor(public router: Router, public _route: ActivatedRoute) { }
 
   ngOnInit() {
+    
     setTimeout(() => {
-      this.router.navigate(["/sign-in"])
-    }, 8000);
+      this.router.navigate(['/sign-in'])
+    }, 4000);
+
   }
 
 }

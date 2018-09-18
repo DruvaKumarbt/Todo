@@ -39,6 +39,7 @@
   .add-btn{
       margin:3px;
       margin-top: 30px;
+     
   }
   .head-up{
     margin-top: 6% !important;
@@ -65,8 +66,23 @@
       bottom: 0;
       right: 0;
       margin: 30px;
+
+      padding: 12px;
+      background: #3F51B5;
+      border: none;
+      border-radius: 51px;
+      color: white;
   }
 
+  .add-task-mobile{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 30px;
+  }
+  .email-input{
+      width: 60%
+  }
   .mat-card-primary{
     background-color: white;
   }
@@ -86,7 +102,11 @@
   .costum-checkBox{
     background: transparent;
     border: none;
-
+    cursor: pointer;
+    text-transform: capitalize;
+  }
+  .costum-checkBox:hover{
+    text-decoration: line-through;
   }
 
   .task-ul{
@@ -115,13 +135,14 @@
     background-image: url('./../../assets/checkbox.png');
     background-repeat: no-repeat;
     background-size: 18px;
+    cursor: default !important;
 }
 .subtask-ul:hover{
     list-style: none;
     padding-left: 50px;
     white-space: nowrap;
     overflow: hidden;
-    cursor: pointer;
+    cursor: default !important;
     background-image: url('./../../assets/check2.png');
     background-repeat: no-repeat;
     background-size: 18px;
@@ -131,7 +152,7 @@
     width: 75%;
 }
 
-  @media screen and (max-width: 400px) {
+  @media screen and (max-width: 450px) {
     .task-head{
         display: inline-block;
         margin: 0px;
@@ -155,4 +176,42 @@
 .add-details{
     margin-top: 20px;
 }
+.sortBtn{
+    margin: 5px
+}
 
+/* Amimations */
+.anime{
+    animation: Animation 4s forwards 0s ease;
+
+  }
+
+  @keyframes Animation{
+    0%{
+        transform: translateY(-100%);
+        opacity: 0;
+        }
+    83%{
+        transform: translateY(0%);
+        opacity: 0.5;
+        }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+        }
+}
+
+.anime1{
+  animation: Animation1 2s forwards 0s ease;
+
+}
+@keyframes Animation1{
+  0%{
+    transform: rotate(0) scale(0.5) skewY(-25deg);
+    opacity: 0.5;
+    }
+100%{
+    transform: rotate(0) scale(1) skewY(0deg);
+    opacity: 1;
+    }
+}

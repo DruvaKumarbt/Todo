@@ -7,7 +7,7 @@ import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { SharedModule } from "./../shared/shared.module";
 
-import {MatSelectModule,MatInputModule, MatButtonModule, MatFormFieldModule, MatSnackBarModule, MatProgressBarModule,  MatExpansionModule} from '@angular/material';
+import { MatCardModule, MatCheckboxModule, MatSelectModule,MatInputModule, MatButtonModule, MatFormFieldModule, MatSnackBarModule, MatProgressBarModule,  MatExpansionModule} from '@angular/material';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 
@@ -22,6 +22,8 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     MatProgressBarModule,
     MatSnackBarModule,
     MatSelectModule,
+    MatCardModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatExpansionModule,
     SharedModule,

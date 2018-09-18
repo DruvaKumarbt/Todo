@@ -29,6 +29,10 @@ export class HomeComponent implements OnInit {
         this.reverse = !this.reverse;
     }
 
+    // invitaition mail
+    public invitation: string;
+    public mail: string;
+
     // user related variables
     public users: any;
     public userId: string;
@@ -55,6 +59,7 @@ export class HomeComponent implements OnInit {
     public undoData: any;
     public taskDetailsToEdit: any;
     public step = 0;
+    public empty: string;
 
     // Modal for create and update tasklist variables
     public count: number = 1;
@@ -75,7 +80,7 @@ export class HomeComponent implements OnInit {
     //notification related variables
     public notifications: any[];
     public notificationCount: number = null;
-    public audio:any;
+    public audio: any;
 
 
 
@@ -95,11 +100,11 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
 
+        this.checkStatus();
+
         this.authToken = Cookie.get('authtoken');
 
         this.userId = this.appService.getUserInfoFromLocalstorage().userId;
-
-        this.checkStatus();
 
         this.verifyUserConfirmation();
 
@@ -113,20 +118,27 @@ export class HomeComponent implements OnInit {
 
         this.getUserDetails(this.userId);
 
-        this.getAllTasks()
+        this.invitation = `http://localhost:4200/sign-in?userId=${this.userId}`;
 
-        //Delay to increase perfromance at start
+        
+        //Delay to ensure perfromance at OnInit
+        
         setTimeout(() => {
+            this.checkForInvitation();
+        }, 2000);
 
+        setTimeout(() => {
+            this.getAllTasks();
+        }, 1000);
+
+        setTimeout(() => {
             this.getALLUsers();
-
         }, 4000);
 
         setTimeout(() => {
-
             this.getNotification(this.userId);
-
         }, 8000);
+        
     }
 
 
@@ -147,6 +159,7 @@ export class HomeComponent implements OnInit {
 
                     // sending notification
                     let notifyObject = {
+                        type: "public",
                         senderName: this.userInfo.firstName,
                         senderId: this.userId,
                         receiverName: '',
@@ -204,8 +217,9 @@ export class HomeComponent implements OnInit {
     public checkStatus: any = () => {
 
         if (Cookie.get('authtoken') === undefined || Cookie.get('authtoken') === '' || Cookie.get('authtoken') === null) {
+            console.log("in chexk stautus");
 
-            this.router.navigate(['/']);
+            this.router.navigate(['/sign-in']);
 
             return false;
 
@@ -259,9 +273,10 @@ export class HomeComponent implements OnInit {
         this.appService.getAllUsers().subscribe(
             data => {
 
-                this.users = data['data'];
+             this.users = data['data'];
+             
 
-            },(err) => {
+            }, (err) => {
 
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
@@ -289,7 +304,7 @@ export class HomeComponent implements OnInit {
 
                 }, 2000);
 
-            },(err) => {
+            }, (err) => {
 
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
@@ -465,11 +480,11 @@ export class HomeComponent implements OnInit {
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
                 });
-    
+
                 setTimeout(() => {
                     this.router.navigate(['/500'])
                 }, 500);
-    
+
             });//end subscribe
 
     }// end get message from a user 
@@ -478,28 +493,28 @@ export class HomeComponent implements OnInit {
 
         this.SocketService.taskChanges().subscribe((data) => {
 
-                if (data.receiverId.includes(this.userId)) {
+            if (data.receiverId.includes(this.userId)) {
 
-                    let message = data;
+                let message = data;
 
-                    this.snackBar.open(`${message.message}`, "Dismiss", {
-                        duration: 5000,
-                    });
+                this.snackBar.open(`${message.message}`, "Dismiss", {
+                    duration: 5000,
+                });
 
-                    // pushing data to notification array
-                    this.notifications.push(message.message);
-                    
-                    this.audio = new Audio();
-                    this.audio.src = "../../../assets/light.mp3";
-                    this.audio.load();
-                    this.audio.play();
+                // pushing data to notification array
+                this.notifications.push(message.message);
 
-                    this.getAllTasks();
-                    this.getALLUsers();
-                    this.notificationCount++;
+                this.audio = new Audio();
+                this.audio.src = "../../../assets/light.mp3";
+                this.audio.load();
+                this.audio.play();
 
-                }
-            }, (err) => {
+                this.getAllTasks();
+                this.getALLUsers();
+                this.notificationCount++;
+
+            }
+        }, (err) => {
 
             this.snackBar.open(`some error occured`, "Dismiss", {
                 duration: 5000,
@@ -523,24 +538,43 @@ export class HomeComponent implements OnInit {
 
             data => {
 
-                this.tasks = data['data'];
+                if(data['status'] === 200){
+
+                    this.tasks = data['data'];
+
+                }else if(data['status']=== 404){
+
+                    this.empty = data['message']
+
+                }else{
+
+                    this.snackBar.open(`some error occured`, "Dismiss", {
+                        duration: 5000,
+                    });
+    
+                    setTimeout(() => {
+                        this.router.navigate(['/500'])
+                    }, 500);
+    
+                }
+
 
             }, (err) => {
 
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
                 });
-    
+
                 setTimeout(() => {
                     this.router.navigate(['/500'])
                 }, 500);
-    
+
             });
-        
+
     }//end of get all task
 
 
-    //create task function
+    //create task function or edit task and make api request
     public addTask: any = () => {
 
         this.taskList = [];
@@ -623,9 +657,7 @@ export class HomeComponent implements OnInit {
 
                             this.SocketService.taskNotify(notifyObject);
 
-                            setTimeout(() => {
-                                window.location.reload()
-                            }, 1000);
+                            this.getAllTasks();
 
                         } else {
 
@@ -681,9 +713,7 @@ export class HomeComponent implements OnInit {
                         this.SocketService.taskNotify(notifyObject);
 
 
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 1000);
+                        this.getAllTasks();
 
                     } else {
 
@@ -807,6 +837,8 @@ export class HomeComponent implements OnInit {
 
         this.clear();
 
+        // this.count = this.taskDetailsToEdit.tasks.length;
+
         this.title = task.title;
         this.taskId = task.taskId
         if (task.type == 'private') {
@@ -926,14 +958,14 @@ export class HomeComponent implements OnInit {
                 this.SocketService.taskNotify(notifyObject);
 
                 // refreshing
-                window.location.reload()
+                this.getAllTasks()
 
             } else {
 
                 this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
                     duration: 5000,
                 });
-                
+
                 setTimeout(() => {
                     this.router.navigate(['/500'])
                 }, 500);
@@ -961,22 +993,24 @@ export class HomeComponent implements OnInit {
         this.appService.getUserNotification(id).subscribe(
             data => {
                 let response = data['data']
-                
+
                 this.notifications = []
-                response.map(x=>{
-                    this.notifications.unshift(x.message);
-                });
-                
+                if (response != null) {
+                    response.map(x => {
+                        this.notifications.unshift(x.message);
+                    });
+                }
+
             }, (err) => {
 
                 this.snackBar.open(`some error occured`, "Dismiss", {
                     duration: 5000,
                 });
-    
+
                 setTimeout(() => {
                     this.router.navigate(['/500'])
                 }, 500);
-    
+
             });
 
 
@@ -1029,6 +1063,91 @@ export class HomeComponent implements OnInit {
         this.step--;
     }
 
+
+
+    // send invitation mail
+    sendInvitationMail() {
+        this.appService.sendInvite(this.userId, this.mail).subscribe(
+            data => {
+
+                let response = data
+
+                if (response['status'] === 200) {
+                    this.snackBar.open(`Invitation mail sent successfully`, "Dismiss", {
+                        duration: 5000,
+                    });
+                } else {
+                    this.snackBar.open(`Some error occured`, "Dismiss", {
+                        duration: 5000,
+                    });
+                }
+            }
+        )
+    }
+
+    //copy to clipboard
+    copyMessage(val: string) {
+        let selBox = document.createElement('textarea');
+        selBox.style.position = 'fixed';
+        selBox.style.left = '0';
+        selBox.style.top = '0';
+        selBox.style.opacity = '0';
+        selBox.value = val;
+        document.body.appendChild(selBox);
+        selBox.focus();
+        selBox.select();
+        document.execCommand('copy');
+        document.body.removeChild(selBox);
+
+        this.snackBar.open(`Invitation link copied successfully`, "Dismiss", {
+            duration: 5000,
+        });
+
+    }
+
+    //check for invitation
+    checkForInvitation() {
+
+        if(Cookie.get('inviteId')){
+            console.log(`Inside cookie Yummy`);
+            
+        let inviteId = Cookie.get('inviteId');
+        
+       this.appService.addInviteFriend(this.userId, inviteId).subscribe(
+        data=>{
+            if(data['status']=== 200){
+
+                this.snackBar.open(`Friend added to friend's list`, "Dismiss", {
+                    duration: 5000,
+                });
+
+                Cookie.delete('inviteId');
+
+                  // sending notification
+                  let notifyObject = {
+                    senderName: this.userInfo.firstName,
+                    senderId: this.userId,
+                    receiverName: '',
+                    receiverId: inviteId,
+                    message: `You are now friend with ${this.userInfo.firstName}`,
+                    createdOn: new Date()
+                }
+                
+                this.SocketService.sendNotify(notifyObject);
+
+
+            }else{
+
+                this.snackBar.open(`Some error occured in adding invited friend to friend's list`, "Dismiss", {
+                    duration: 5000,
+                });
+
+            }
+        }
+       )
+    }
+
+    }
 
     // logout Function
     public logout: any = () => {

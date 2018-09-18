@@ -10,7 +10,9 @@ import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 @Injectable()
 export class AppService {
 
-  public url = 'http://localhost:3000';
+  public url =  'http://localhost:3000';
+  // private url ='http://todo-node.akshaypatil.online';
+
 
   constructor(public http: HttpClient) { }
 
@@ -19,6 +21,15 @@ export class AppService {
   public getAllCountry() {
 
     let response = this.http.get(`https://restcountries.eu/rest/v2/all`);
+
+    return response;
+
+  }
+
+  // get all countries
+  public getCountry(code) {
+
+    let response = this.http.get(`https://restcountries.eu/rest/v2/callingcode/${code}`);
 
     return response;
 
@@ -58,6 +69,17 @@ export class AppService {
 
   }
 
+  //get all the info about users friends
+  public getUserFriends(friendsArray): Observable<any> {
+
+    const params = new HttpParams()
+      .set('friends', friendsArray)
+      .set('authToken', Cookie.get('authtoken'))
+
+    return this.http.post(`${this.url}/api/v1/users/findFriend`, params);
+
+  } 
+
   public signupFunction(data): Observable<any> {
 
     const params = new HttpParams()
@@ -92,6 +114,36 @@ export class AppService {
   } // end of forgotPasswordFunction function.
 
 
+  // send invitation mail
+  public sendInvite(userId, email) {
+
+    let response = this.http.post(`${this.url}/api/v1/users/invitation?userId=${userId}&email=${email}`, email);
+
+    return response;
+
+  }
+
+
+    // Add invited friend to friends array
+    public addInviteFriend(userId, inviteId) {
+
+      let response = this.http.post(`${this.url}/api/v1/users/addInvitedFriend?userId=${userId}&inviteId=${inviteId}`, inviteId);
+  
+      return response;
+  
+    }
+
+
+      // remove friend to friends array
+      public unFriend(userId, friendId) {
+
+        let response = this.http.post(`${this.url}/api/v1/users/unFriend?userId=${userId}&friendId=${friendId}`, friendId);
+    
+        return response;
+    
+      }
+
+  // change password
   public changePasswordFunction(data): Observable<any> {
 
     const params = new HttpParams()

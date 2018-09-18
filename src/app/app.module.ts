@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatBadgeModule, MatPaginatorModule, MatTooltipModule, MatExpansionModule, MatSelectModule, MatCheckboxModule, MatIconModule, MatProgressSpinnerModule ,MatButtonModule, MatInputModule, MatFormFieldModule, MatCardModule, MatProgressBarModule, MatSlideToggleModule} from '@angular/material';
+import { MatChipsModule, MatBadgeModule, MatPaginatorModule, MatTooltipModule, MatExpansionModule, MatSelectModule, MatCheckboxModule, MatIconModule, MatProgressSpinnerModule ,MatButtonModule, MatInputModule, MatFormFieldModule, MatCardModule, MatProgressBarModule, MatSlideToggleModule} from '@angular/material';
 import { HttpClientModule } from '@angular/common/http';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { Ng2OrderModule } from 'ng2-order-pipe';
@@ -18,6 +18,7 @@ import { SocketService } from './socket.service';
 import { AppService } from './app.service';
 import { Error404Component } from './error404/error404.component';
 import { Error500Component } from './error500/error500.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { Error500Component } from './error500/error500.component';
     HomeComponent,
     Error404Component,
     Error500Component,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,6 +40,7 @@ import { Error500Component } from './error500/error500.component';
     Ng2OrderModule,
     NgxPaginationModule,
     MatIconModule,
+    MatChipsModule,
     MatBadgeModule,
     MatExpansionModule,
     MatSelectModule,
@@ -53,6 +56,7 @@ import { Error500Component } from './error500/error500.component';
     RouterModule.forRoot([
       { path: 'sign-in', component: SigninComponent, pathMatch: 'full' },
       { path: 'home', component:HomeComponent},
+      { path: 'profile/:userId', component:ProfileComponent},
       { path: '500', component:Error500Component},
       { path: '', redirectTo: 'sign-in', pathMatch: 'full' },
       { path: '**', component: Error404Component }

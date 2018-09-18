@@ -37,6 +37,13 @@ export class SignupComponent implements OnInit {
 
     this.getCountries();
 
+    //to Check if the user has been invited by someone, if so store it in cookie to add him as friend.
+    let userId = this._route.snapshot.queryParams.userId
+
+    if(userId){
+      Cookie.set('inviteId', userId);
+    }
+   
   }
 
 
@@ -115,8 +122,8 @@ export class SignupComponent implements OnInit {
         duration: 5000,
       })
 
-    } else if (!this.password) {
-      this.snackBar.open(`enter password`, "Dismiss", {
+    } else if (this.password.length < 8) {
+      this.snackBar.open(`Please make sure your password is more than 8 random characters`, "Dismiss", {
         duration: 5000,
       })
 
@@ -133,7 +140,7 @@ export class SignupComponent implements OnInit {
       }
       data.mobile = `+${this.selected} ${this.mobileNumber}`
 
-      
+
       this.appService.signupFunction(data)
         .subscribe((apiResponse) => {
 
@@ -152,7 +159,7 @@ export class SignupComponent implements OnInit {
 
             this.appService.setUserInfoInLocalStorage(apiResponse.data.userDetails)
 
-              this.router.navigate(['/home']);
+            this.router.navigate(['/home']);
 
           } else {
 

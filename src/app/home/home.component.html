@@ -17,7 +17,8 @@
                 </div>
                 <div class="collapse" id="collapseExample">
                     <div class="card-body">
-                        Do you want to delete this tasklist? <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)="deleteTask()">Yes!</button>
+                        Do you want to delete this tasklist? <button mat-raised-button class="mat-elevation-z8 add-btn float-right"
+                            color='primary' (click)="deleteTask()" data-dismiss="modal">Yes!</button>
                     </div>
                 </div>
 
@@ -27,7 +28,7 @@
                     <mat-form-field>
                         <input matInput placeholder="Title" type="text" [(ngModel)]="title">
                     </mat-form-field>
-                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)='addTask()'><i
+                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' (click)='addTask()' data-dismiss="modal"><i
                             class="material-icons">
                             done_outline
                         </i></button>
@@ -43,7 +44,7 @@
                                 <mat-expansion-panel [expanded]="step === detail" (opened)="setStep(detail)" hideToggle>
                                     <mat-expansion-panel-header>
                                         <mat-panel-title>
-                                            Detail:{{detail}}
+                                            SubTask:{{detail}}
                                         </mat-panel-title>
                                         <mat-panel-description>
                                             {{ this['detail' + i + detail ] }}
@@ -109,13 +110,13 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                     <mat-progress-bar mode="indeterminate" *ngIf="!notifications"></mat-progress-bar>
+                    <mat-progress-bar mode="indeterminate" *ngIf="!notifications"></mat-progress-bar>
 
                     <div *ngIf="notifications" class="container">
                         <div class="row" *ngFor="let notify of notifications.slice().reverse()">
-                                
+
                             <h6 class="lift-up">
-                                    <i class="material-icons" >list_alt</i>
+                                <i class="material-icons">list_alt</i>
 
                                 {{ notify }}</h6>
                             <hr>
@@ -135,12 +136,17 @@
         <mat-progress-bar mode="indeterminate" value="40" *ngIf="!users && !userInfo"></mat-progress-bar>
 
         <div class="container">
-            <div *ngIf="userInfo" class="row" style="margin-top:10px">
+            <div class="row" style="margin-top:10px">
                 <div class="ml-auto">
 
-                    Welcome, <b>{{userInfo.firstName}}</b> &nbsp;&nbsp;|
+                    Welcome, <span  *ngIf="userInfo"><b>{{userInfo.firstName}}</b></span>  &nbsp;&nbsp;|
                     <button mat-icon-button matTooltip="Notification" data-toggle="modal" data-target="#exampleModal"><i
-                            class="material-icons" matBadge="{{notificationCount}}" color="primary" matBadgeOverlap="true" (click)='clearCount()'> notifications_none </i></button>
+                            class="material-icons" matBadge="{{notificationCount}}" color="primary" matBadgeOverlap="true" (click)='clearCount()'>
+                            notifications_none </i></button>
+                    |
+                    <button mat-icon-button data-toggle="collapse" data-target="#share" aria-expanded="false" aria-controls="share">
+                        <i class="material-icons"> share </i>
+                    </button>
                     | &nbsp;&nbsp;
                     <button mat-raised-button class="mat-elevation-z8" matTooltip="Logout" (click)="logout()">
                         <img src="./../../assets/logout.png" height="20px" alt="">
@@ -148,8 +154,26 @@
                 </div>
 
             </div>
-            <h2 class="text-center head-up"><img src="./../../assets/check.png" alt=""> To</h2>
-            <h2 class="text-center head-down"><img src="./../../assets/check.png" alt=""> Do</h2>
+
+            <!-- Share collapse -->
+            <div class="collapse text-center" id="share">
+                <hr>
+                <mat-form-field class="text-center email-input ">
+                    <input matInput placeholder="Enter email to send invitation." type="text" [(ngModel)]="mail">
+                </mat-form-field> |
+
+                <button mat-icon-button color="primary" matTooltip="Send invitaion mail" (click)='sendInvitationMail()' ><i class="material-icons"> send</i></button>|
+
+                <button mat-icon-button color="primary" matTooltip={{invitation}} (click)="copyMessage(invitation)" value='click to copy'><i
+                        class="material-icons"> file_copy </i></button>
+
+                        <hr>
+            </div>
+
+
+            <!-- Heading  -->
+            <h2 class="text-center head-up"><img class="anime" src="./../../assets/check.png" alt=""> To</h2>
+            <h2 class="text-center head-down"><img class="anime" src="./../../assets/check.png" alt=""> Do</h2>
             <br>
 
             <mat-expansion-panel class="mat-elevation-z8">
@@ -174,7 +198,7 @@
                         <li *ngFor="let user of users | filter: peopleSearch">
                             <div *ngIf="userId !== user.userId ">
 
-                                <mat-card class=" mat-card-green-people ">
+                                <mat-card class=" mat-card-green-people anime1">
 
                                     <p>{{user.firstName}}</p>
                                     <button *ngIf="!userInfo.request.includes(user.userId) && !userInfo.friends.includes(user.userId) && !userInfo.requested.includes(user.userId)"
@@ -191,8 +215,8 @@
                                             check
                                         </i></button>
 
-                                    <button *ngIf="userInfo.friends.includes(user.userId)" mat-raised-button class="mat-elevation-z8" color='primary'><i
-                                            class="material-icons">
+                                    <button [routerLink]="['/profile',user.userId]" *ngIf="userInfo.friends.includes(user.userId)" mat-raised-button class="mat-elevation-z8"
+                                        color='primary'><i class="material-icons">
                                             account_circle
                                         </i></button>
                                 </mat-card>
@@ -208,26 +232,31 @@
             <hr><br>
             <!-- Tasks -->
 
-            <mat-spinner *ngIf='!tasks' [diameter]="100" class="mx-auto"></mat-spinner>
-
+            <mat-spinner *ngIf='!tasks && !empty' [diameter]="100" class="mx-auto"></mat-spinner>
+            <mat-card class="text-center" *ngIf='empty && !tasks'>
+                <h4>{{empty}}</h4>
+            </mat-card>
             <div *ngIf='tasks' class="row">
-                <div class="col-md-3">
-                    <mat-form-field class="example-full-width">
+                <div class="col-md-3 text-center">
+                    <mat-form-field>
                         <input matInput placeholder="Search" type="text" [(ngModel)]="filter">
                     </mat-form-field>
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 text-center">
                     <!-- pgination -->
                     <pagination-controls (pageChange)="p = $event"></pagination-controls>
                 </div>
 
 
-                <div class="col-md-3">
-                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' matTooltip="SortBy Title" (click)="sort('title')">Title</button>
+                <div class="col-md-3 text-center">
+                    <p> <b>SortBy</b> <i class="material-icons">
+                            filter_list
+                        </i></p>
+                    <button mat-raised-button class="mat-elevation-z8 sortBtn" color='primary' matTooltip="SortBy Title" (click)="sort('title')">Title</button>
 
-                    <button mat-raised-button class="mat-elevation-z8 add-btn float-right" color='primary' matTooltip="SortBy Date" (click)="sort('createdOn')">createdOn
+                    <button mat-raised-button class="mat-elevation-z8 sortBtn" color='primary' matTooltip="SortBy Date" (click)="sort('createdOn')">Date
                     </button>
 
                 </div>
@@ -239,13 +268,13 @@
             <button mat-raised-button class="mat-elevation-z8 float-right" color='primary' matTooltip="Ctrl + Z" (click)='undo()'><i
                     class="material-icons">undo</i></button>
 
-            <div class="row" *ngFor='let task of tasks  | orderBy: key | filter:filter | paginate: { itemsPerPage: 10, currentPage: p }'
+            <div class="row" *ngFor='let task of tasks  | orderBy: key : reverse | filter:filter  | paginate: { itemsPerPage: 10, currentPage: p }'
                 style="margin-top:60px">
 
 
                 <div *ngIf="task.type === 'public'" class="mx-auto div-width">
 
-
+                    
                     <mat-card class="card mat-card-primary task-card mat-elevation-z8">
                         <h4 class="task-head">{{ task.title }}</h4>
                         <button mat-icon-button matTooltip="Edit" color="primary" *ngIf="userId === task.createdByUserId || userInfo.friends.includes(task.createdByUserId)"
@@ -275,10 +304,10 @@
 
                                 <ul>
                                     <li class="subtask-ul" *ngFor='let x of subtask.subtask; let j = index'>
-                                        <button class="costum-checkBox"  matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)" [disabled]="userId !== task.createdByUserId && !userInfo.friends.includes(task.createdByUserId)">
+                                        <button class="costum-checkBox" matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)" [disabled]="userId !== task.createdByUserId && !userInfo.friends.includes(task.createdByUserId)">
                                             {{x}}
                                         </button>
-                                        
+
                                     </li>
                                 </ul>
                                 <hr>
@@ -316,8 +345,12 @@
                                 </mat-checkbox>
 
                                 <ul>
-                                    <li class="subtask-ul" *ngFor='let x of subtask.subtask; let j = index' matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)">
-                                        {{x}}
+
+                                    <li class="subtask-ul" *ngFor='let x of subtask.subtask; let j = index'>
+                                        <button class="costum-checkBox" matTooltip="Mark Complete" (click)="subtaskChecked(task, i, j)">
+                                            {{x}}
+                                        </button>
+
                                     </li>
                                 </ul>
                                 <hr>
@@ -328,17 +361,20 @@
             </div>
             <!-- end of task row -->
         </div>
-
+        <div class="col-md-12 text-center">
+            <!-- pgination -->
+            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        </div>
 
     </div>
-    <button mat-fab class="mat-elevation-z8 add-task d-none d-md-block" color='primary' data-toggle="modal" data-target="#myModal"
-        (click)="clear(); editModeOff()" matTooltip="Add a Task">
-        <i class="material-icons">
+    <button class="mat-elevation-z8 add-task d-none d-md-block" color='primary' data-toggle="modal" data-target="#myModal" (click)="clear(); editModeOff()"
+        matTooltip="Add a Task">Add Task
+        <i class="material-icons" style="font-size : 14px">
             add
         </i></button>
-    <button mat-mini-fab class="mat-elevation-z8 add-task d-xs-inline d-sm-inline d-md-none" color='primary' data-toggle="modal"
+    <button mat-mini-fab class="mat-elevation-z8 add-task-mobile d-xs-inline d-sm-inline d-md-none" color='primary' data-toggle="modal"
         (click)="clear(); editModeOff()" data-target="#myModal"><i class="material-icons" matTooltip="Add a Task">
             add
         </i></button>
-
 </div>
+

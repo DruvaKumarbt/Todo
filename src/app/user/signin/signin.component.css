@@ -11,7 +11,6 @@
     background-image: url("../../../assets/background.png");
     min-height: -webkit-fill-available;
     background-attachment: fixed;
-    /* background-position: center; */
     background-repeat: no-repeat;
     background-size: cover;
   }
@@ -22,3 +21,117 @@
   .toggle-margin{
     margin: 15px !important;
   }
+  .head-up{
+    margin-top: 6% !important;
+  }
+  .head-down{
+    margin-bottom: 6% !important;
+
+  }
+
+/* Animations */
+
+  .anime{
+    animation: Animation 4s forwards 0s ease;
+
+  }
+
+  @keyframes Animation{
+    0%{
+        transform: translateY(-100%);
+        opacity: 0;
+        }
+    83%{
+        transform: translateY(0%);
+        opacity: 0.5;
+        }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+        }
+}
+
+.anime1{
+  animation: Animation1 4s forwards 0s ease;
+
+}
+@keyframes Animation1{
+  0%{
+    transform: rotate(0) scale(0.5) skewY(-25deg);
+    opacity: 0.5;
+    }
+100%{
+    transform: rotate(0) scale(1) skewY(0deg);
+    opacity: 1;
+    }
+}
+
+
+  .mat-card-primary{
+    background-color: white;
+  }
+  .task-card{
+      width: 100%;
+  }
+  .task-head{
+    display: inline-block;
+    margin: 0px;
+    width: 86%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    
+  }
+
+  .costum-checkBox{
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-transform: capitalize;
+  }
+  .costum-checkBox:hover{
+    text-decoration: line-through;
+  }
+
+  .task-ul{
+      height: 150px;
+      font-size: smaller;
+      list-style: none;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      overflow-y: scroll;
+      text-overflow: ellipsis;
+      padding: 0px;
+  }
+
+  .task-ul::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+.subtask-ul{
+    list-style: none;
+    padding-left: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 0.85em;
+    background-image: url('./../../../assets/checkbox.png');
+    background-repeat: no-repeat;
+    background-size: 18px;
+    cursor: default !important;
+}
+.subtask-ul:hover{
+    list-style: none;
+    padding-left: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    cursor: default !important;
+    background-image: url('./../../../assets/check2.png');
+    background-repeat: no-repeat;
+    background-size: 18px;
+ }
+
+.div-width{
+    width: 75%;
+}
