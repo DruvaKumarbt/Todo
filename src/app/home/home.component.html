@@ -84,12 +84,10 @@
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                    <button *ngIf='!spinner  && !taskCreationUpdate' mat-raised-button class="mat-elevation-z8" color='primary' data-dismiss="modal">
+                    <button  mat-raised-button class="mat-elevation-z8" color='primary' data-dismiss="modal">
                         <i class="material-icons">
                             close
                         </i></button>
-                    <mat-spinner *ngIf='spinner' [diameter]="40"></mat-spinner>
-                    <a *ngIf='!spinner && taskCreationUpdate'>Saved Successfully!!!</a>
                 </div>
 
             </div>
@@ -147,6 +145,7 @@
                     <button mat-icon-button data-toggle="collapse" data-target="#share" aria-expanded="false" aria-controls="share">
                         <i class="material-icons"> share </i>
                     </button>
+                    |  <button mat-icon-button (click)="ngOnInit()" matTooltip="refresh"> <i class="material-icons">refresh </i></button>
                     | &nbsp;&nbsp;
                     <button mat-raised-button class="mat-elevation-z8" matTooltip="Logout" (click)="logout()">
                         <img src="./../../assets/logout.png" height="20px" alt="">
@@ -200,7 +199,7 @@
                         <li *ngFor="let user of users | filter: peopleSearch">
                             <div *ngIf="userId !== user.userId ">
 
-                                <mat-card class=" mat-card-green-people anime1">
+                                <mat-card class=" mat-card-green-people">
 
                                     <p>{{user.firstName}}</p>
                                     <button *ngIf="!userInfo.request.includes(user.userId) && !userInfo.friends.includes(user.userId) && !userInfo.requested.includes(user.userId)"
@@ -275,7 +274,7 @@
                     class="material-icons">undo</i></button>
 
             <!-- for loop starts here -->
-            <div class="row" *ngFor='let task of tasks  | orderBy: key : reverse | filter:filter  | paginate: { itemsPerPage: 10, currentPage: p }'
+            <div class="row" *ngFor='let task of tasks  | orderBy: key : reverse | filter:filter  | paginate: { itemsPerPage: 12, currentPage: p }'
                 style="margin-top:60px">
 
 

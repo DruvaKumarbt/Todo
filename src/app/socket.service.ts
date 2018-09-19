@@ -78,7 +78,7 @@ export class SocketService {
 
 
   public sendNotify = (notifyObject) => {
-
+    
     this.socket.emit('notify', notifyObject);
 
   } // end send notify
@@ -86,7 +86,7 @@ export class SocketService {
   public notify = (userId) => {
 
     return Observable.create((observer) => {
-
+      
       this.socket.on(userId, (data) => {
 
         observer.next(data);
