@@ -26,7 +26,7 @@ export class ChangePasswordComponent implements OnInit {
 
   public validation: any = () => {
     if (this.pass1 === this.pass2) {
-      if (this.pass1.length > 8) {
+      if (this.pass1.length >= 8) {
 
         return true;
 

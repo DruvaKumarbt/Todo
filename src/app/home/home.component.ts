@@ -118,7 +118,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.getUserDetails(this.userId);
 
-        this.invitation = `http://localhost:4200/sign-in?userId=${this.userId}`;
+        this.invitation = `http://localhost:4200/sign-up?userId=${this.userId}`;
 
 
         //on purpose Delay to ensure perfromance at OnInit
@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
             this.checkForInvitation();
-        }, 2000);
+        }, 6000);
 
         setTimeout(() => {
             this.getALLUsers();
@@ -489,6 +489,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                 this.notificationCount++;
                 this.getUserDetails(this.userId);
+                this.getALLUsers();
 
             }, (err) => {
 
@@ -1153,6 +1154,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         }
 
                         this.SocketService.sendNotify(notifyObject);
+
+                        this.getALLUsers();
 
 
                     } else {

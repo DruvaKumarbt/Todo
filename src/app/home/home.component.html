@@ -239,6 +239,7 @@
             <!-- card in case of no tasks -->
             <mat-card class="text-center" *ngIf='empty && !tasks'>
                 <h4>{{empty}}</h4>
+                <button mat-icon-button (click)="ngOnInit()"> <i class="material-icons">refresh </i></button>
             </mat-card>
 
             <div *ngIf='tasks' class="row">
