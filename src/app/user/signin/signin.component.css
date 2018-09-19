@@ -7,6 +7,7 @@
   .example-full-width {
     width: 100%;
   }
+
   .background{
     background-image: url("../../../assets/background.png");
     min-height: -webkit-fill-available;
@@ -14,19 +15,22 @@
     background-repeat: no-repeat;
     background-size: cover;
   }
+
   .singinbtn{
     width: 100%;
     margin: 0px !important;
   }
+
   .toggle-margin{
     margin: 15px !important;
   }
+
   .head-up{
     margin-top: 6% !important;
   }
+
   .head-down{
     margin-bottom: 6% !important;
-
   }
 
 /* Animations */
@@ -70,9 +74,11 @@
   .mat-card-primary{
     background-color: white;
   }
+
   .task-card{
       width: 100%;
   }
+
   .task-head{
     display: inline-block;
     margin: 0px;
@@ -80,7 +86,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    
   }
 
   .costum-checkBox{
@@ -89,6 +94,7 @@
     cursor: pointer;
     text-transform: capitalize;
   }
+  
   .costum-checkBox:hover{
     text-decoration: line-through;
   }

@@ -20,6 +20,7 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
+
   public selected: '91';
   public email: string;
   public password: string;
@@ -27,6 +28,7 @@ export class SignupComponent implements OnInit {
   public lastName: string;
   public mobileNumber: string;
   public progress: boolean = false;
+  
 
   public countries: any;
   countryCode: any[] = [];
@@ -47,7 +49,7 @@ export class SignupComponent implements OnInit {
   }
 
 
-
+  // get countries to get calling code of all the countries and maping them to select
   getCountries() {
     this.appService.getAllCountry().subscribe(
       data => {
@@ -65,22 +67,6 @@ export class SignupComponent implements OnInit {
   }
 
 
-
-  step = 0;
-
-  setStep(index: number) {
-    this.step = index;
-  }
-
-  nextStep() {
-    this.step++;
-  }
-
-  prevStep() {
-    this.step--;
-  }
-
-
   //Validations
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -95,6 +81,7 @@ export class SignupComponent implements OnInit {
   matcher = new MyErrorStateMatcher();
 
 
+  // On submit function
   submit() {
 
     if (!this.firstName) {
@@ -153,17 +140,13 @@ export class SignupComponent implements OnInit {
 
             Cookie.set('authtoken', apiResponse.data.authToken);
 
-            // Cookie.set('receiverId', apiResponse.data.userDetails.userId);
-
-            // Cookie.set('receiverName', apiResponse.data.userDetails.firstName + ' ' + apiResponse.data.userDetails.lastName);
-
             this.appService.setUserInfoInLocalStorage(apiResponse.data.userDetails)
 
             this.router.navigate(['/home']);
 
           } else {
 
-            this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
+            this.snackBar.open(`${apiResponse.message}.`, "Dismiss", {
               duration: 5000,
             })
 
@@ -171,7 +154,7 @@ export class SignupComponent implements OnInit {
 
         }, (err) => {
 
-          this.snackBar.open(`some error occured`, "Dismiss", {
+          this.snackBar.open(`some error occured. Please try again later`, "Dismiss", {
             duration: 5000,
           })
 

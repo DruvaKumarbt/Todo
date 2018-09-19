@@ -3,14 +3,14 @@ import { Observable } from 'rxjs';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
 
-import { HttpClient, HttpHeaders  } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 
 
 @Injectable()
 export class AppService {
 
-  public url =  'http://localhost:3000';
+  public url = 'http://localhost:3000';
   // private url ='http://todo-node.akshaypatil.online';
 
 
@@ -26,7 +26,7 @@ export class AppService {
 
   }
 
-  // get all countries
+  // get country form code
   public getCountry(code) {
 
     let response = this.http.get(`https://restcountries.eu/rest/v2/callingcode/${code}`);
@@ -35,6 +35,7 @@ export class AppService {
 
   }
 
+
   //get userinfo from localstoreage
   public getUserInfoFromLocalstorage = () => {
 
@@ -42,11 +43,10 @@ export class AppService {
 
   } // end getUserInfoFromLocalstorage
 
-
+  //set userInfo in local storage
   public setUserInfoInLocalStorage = (data) => {
 
     localStorage.setItem('userInfo', JSON.stringify(data))
-
 
   }
 
@@ -69,7 +69,7 @@ export class AppService {
 
   }
 
-  //get all the info about users friends
+  //get info about users friends
   public getUserFriends(friendsArray): Observable<any> {
 
     const params = new HttpParams()
@@ -78,8 +78,9 @@ export class AppService {
 
     return this.http.post(`${this.url}/api/v1/users/findFriend`, params);
 
-  } 
+  }
 
+  //signup 
   public signupFunction(data): Observable<any> {
 
     const params = new HttpParams()
@@ -92,6 +93,7 @@ export class AppService {
     return this.http.post(`${this.url}/api/v1/users/signup`, params);
 
   } // end of signupFunction function.
+
 
   public signinFunction(data): Observable<any> {
 
@@ -124,24 +126,24 @@ export class AppService {
   }
 
 
-    // Add invited friend to friends array
-    public addInviteFriend(userId, inviteId) {
+  // Add invited friend to friends array
+  public addInviteFriend(userId, inviteId) {
 
-      let response = this.http.post(`${this.url}/api/v1/users/addInvitedFriend?userId=${userId}&inviteId=${inviteId}`, inviteId);
-  
-      return response;
-  
-    }
+    let response = this.http.post(`${this.url}/api/v1/users/addInvitedFriend?userId=${userId}&inviteId=${inviteId}`, inviteId);
+
+    return response;
+
+  }
 
 
-      // remove friend to friends array
-      public unFriend(userId, friendId) {
+  // remove friend to friends array
+  public unFriend(userId, friendId) {
 
-        let response = this.http.post(`${this.url}/api/v1/users/unFriend?userId=${userId}&friendId=${friendId}`, friendId);
-    
-        return response;
-    
-      }
+    let response = this.http.post(`${this.url}/api/v1/users/unFriend?userId=${userId}&friendId=${friendId}`, friendId);
+
+    return response;
+
+  }
 
   // change password
   public changePasswordFunction(data): Observable<any> {
@@ -191,7 +193,6 @@ export class AppService {
 
 
   //add as friend
-  //Friends request
   public addAsFriend(freindId, userId): Observable<any> {
 
     const params = new HttpParams()
@@ -235,9 +236,9 @@ export class AppService {
     let friendList = this.getUserInfoFromLocalstorage().friends
     friendList.push(this.getUserInfoFromLocalstorage().userId)
 
-    friendList = taskObj.type === "public"? friendList : this.getUserInfoFromLocalstorage().userId;
+    friendList = taskObj.type === "public" ? friendList : this.getUserInfoFromLocalstorage().userId;
 
-    
+
     const params = new HttpParams()
       .set('title', taskObj.title)
       .set('tasks', JSON.stringify(taskObj.tasks))
@@ -260,9 +261,9 @@ export class AppService {
     let friendList = this.getUserInfoFromLocalstorage().friends
     friendList.push(this.getUserInfoFromLocalstorage().userId)
 
-    friendList = taskObj.type === "public"? friendList : this.getUserInfoFromLocalstorage().userId;
+    friendList = taskObj.type === "public" ? friendList : this.getUserInfoFromLocalstorage().userId;
 
-    
+
     const params = new HttpParams()
       .set('title', taskObj.title)
       .set('tasks', JSON.stringify(taskObj.tasks))
@@ -276,15 +277,17 @@ export class AppService {
     return this.http.post(`${this.url}/api/v1/task/${taskObj.taskId}/delete`, params);
 
   } // end of delete task function
+  
 
-   //Undo tasks
-   public undo() {
+  //Undo tasks
+  public undo() {
 
     let response = this.http.get(`${this.url}/api/v1/task/${this.getUserInfoFromLocalstorage().userId}/undo?authToken=${Cookie.get('authtoken')}`);
 
     return response;
 
   }
+  
 
   //get notification for user
   public getUserNotification(id) {

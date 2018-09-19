@@ -1,15 +1,18 @@
-<mat-progress-bar mode="indeterminate" *ngIf="!userInfo">
-</mat-progress-bar>
+<mat-progress-bar mode="indeterminate" *ngIf="!userInfo"></mat-progress-bar>
 
 <div class="container">
+
     <button mat-icon-button color="primary" matTooltip="Back" (click)="goBack()">
         <i class="material-icons"> arrow_back </i>
     </button>
+
     <div class="row">
+
+        <!-- Main card -->
         <mat-card class="mx-auto marginTop" *ngIf="userInfo">
             <div class="container">
                 <div class="row">
-                    <button mat-raised-button  matTooltip="Unfriend" (click)="unFriend()" class="ml-auto"> Unfriend</button>
+                    <button mat-raised-button matTooltip="Unfriend" (click)="unFriend()" class="ml-auto"> Unfriend</button>
                     <div class="col-md-12">
                         <div class="text-center">
 
@@ -28,7 +31,7 @@
                         <br>
 
                         <p>Phone no.</p>
-                        <p> <b>{{userInfo.mobileNumber}}</b> </p>
+                        <p *ngIf="userInfo.mobileNumber"> <b>{{userInfo.mobileNumber}}</b> </p>
 
                     </div>
 
@@ -44,7 +47,9 @@
 
                 </div>
 
+                <!-- Friend's friend list -->
                 <mat-expansion-panel class="mat-elevation-z8">
+
                     <mat-expansion-panel-header>
                         <mat-panel-title>
                             <i class="material-icons"> person_pin </i>
@@ -68,7 +73,6 @@
                                 <mat-card class=" mat-card-green-people " *ngIf='user.userId !== id'>
                                     <p> <i class="material-icons profile-pic2"> account_circle</i></p>
                                     <p>{{user.firstName}}</p>
-
                                 </mat-card>
 
                             </li>
@@ -80,6 +84,5 @@
 
             </div>
         </mat-card>
-
     </div>
 </div>

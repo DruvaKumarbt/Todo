@@ -23,7 +23,7 @@ export class ForgotPasswordComponent implements OnInit {
 
   public email: any;
 
-  constructor( public snackBar: MatSnackBar, public appService: AppService, public router: Router,) { }
+  constructor(public snackBar: MatSnackBar, public appService: AppService, public router: Router, ) { }
 
   ngOnInit() {
   }
@@ -45,16 +45,17 @@ export class ForgotPasswordComponent implements OnInit {
   public submit: any = () => {
 
     if (!this.email) {
+
       this.snackBar.open(`Please enter email`, "Dismiss", {
         duration: 5000,
       });
-
 
     } else {
 
       let data = {
         email: this.email
       }
+
       this.appService.forgotPasswordFunction(data)
         .subscribe((apiResponse) => {
 
@@ -62,7 +63,7 @@ export class ForgotPasswordComponent implements OnInit {
             this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
               duration: 5000,
             });
-      
+
             setTimeout(() => {
 
               this.router.navigate(['/sign-in']);
@@ -84,7 +85,6 @@ export class ForgotPasswordComponent implements OnInit {
           });
 
         });
-
 
     }
 

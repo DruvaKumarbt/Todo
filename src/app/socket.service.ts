@@ -5,7 +5,6 @@ import { AppService } from './app.service'
 import * as io from 'socket.io-client';
 
 import { Observable } from 'rxjs';
-import { Cookie } from 'ng2-cookies/ng2-cookies';
 
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -14,45 +13,47 @@ import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 @Injectable()
 export class SocketService {
 
-  private url ='http://localhost:3000';
+  private url = 'http://localhost:3000';
   // private url ='http://todo-node.akshaypatil.online';
 
 
   private socket;
 
-  constructor(public http: HttpClient, public appService:AppService) {  
+  constructor(public http: HttpClient, public appService: AppService) {
     // connection is being created.
     // that handshake
     this.socket = io(this.url);
 
   }
 
-   // events to be listened 
-   public verifyUser = () => {
+  // events to be listened 
+  public verifyUser = () => {
 
     return Observable.create((observer) => {
 
       this.socket.on('verifyUser', (data) => {
-        
+
         observer.next(data);
 
       }); // end Socket
     }); // end Observable
   } // end verifyUser
 
+
+
   public onlineUserList = () => {
-    
+
     return Observable.create((observer) => {
 
-        
-        this.socket.on("online-user-list", (userList) => {
-          
-          observer.next(userList);
-  
-        }); // end Socket
+
+      this.socket.on("online-user-list", (userList) => {
+
+        observer.next(userList);
+
+      }); // end Socket
     }); // end Observable
   } // end onlineUserList
-  
+
 
   public disconnectedSocket = () => {
 
@@ -74,10 +75,10 @@ export class SocketService {
     this.socket.emit("set-user", authToken);
 
   } // end setUser
-  
+
 
   public sendNotify = (notifyObject) => {
-    
+
     this.socket.emit('notify', notifyObject);
 
   } // end send notify
@@ -85,7 +86,7 @@ export class SocketService {
   public notify = (userId) => {
 
     return Observable.create((observer) => {
-      
+
       this.socket.on(userId, (data) => {
 
         observer.next(data);
@@ -104,17 +105,19 @@ export class SocketService {
 
     notifyObject.receiverId = friendList
     console.log(notifyObject);
-    
-    if(notifyObject.type === "public"){
+
+    if (notifyObject.type === "public") {
       this.socket.emit('task-notify', notifyObject);
     }
 
   } // end send TaskNotify
 
+
+//Listing to task chages 
   public taskChanges = () => {
 
     return Observable.create((observer) => {
-      
+
       this.socket.on("task-changes", (data) => {
 
         observer.next(data);
@@ -123,7 +126,9 @@ export class SocketService {
     }); // end Observable
   } // end notify
 
-  public exitSocket = () =>{
+
+  // disconnect socket
+  public exitSocket = () => {
 
 
     this.socket.disconnect();

@@ -139,7 +139,7 @@
             <div class="row" style="margin-top:10px">
                 <div class="ml-auto">
 
-                    Welcome, <span  *ngIf="userInfo"><b>{{userInfo.firstName}}</b></span>  &nbsp;&nbsp;|
+                    Welcome, <span *ngIf="userInfo"><b>{{userInfo.firstName}}</b></span> &nbsp;&nbsp;|
                     <button mat-icon-button matTooltip="Notification" data-toggle="modal" data-target="#exampleModal"><i
                             class="material-icons" matBadge="{{notificationCount}}" color="primary" matBadgeOverlap="true" (click)='clearCount()'>
                             notifications_none </i></button>
@@ -162,12 +162,13 @@
                     <input matInput placeholder="Enter email to send invitation." type="text" [(ngModel)]="mail">
                 </mat-form-field> |
 
-                <button mat-icon-button color="primary" matTooltip="Send invitaion mail" (click)='sendInvitationMail()' ><i class="material-icons"> send</i></button>|
+                <button mat-icon-button color="primary" matTooltip="Send invitaion mail" (click)='sendInvitationMail()'><i
+                        class="material-icons"> send</i></button>|
 
                 <button mat-icon-button color="primary" matTooltip={{invitation}} (click)="copyMessage(invitation)" value='click to copy'><i
                         class="material-icons"> file_copy </i></button>
 
-                        <hr>
+                <hr>
             </div>
 
 
@@ -176,6 +177,7 @@
             <h2 class="text-center head-down"><img class="anime" src="./../../assets/check.png" alt=""> Do</h2>
             <br>
 
+            <!-- card for Peoples and friends on platform -->
             <mat-expansion-panel class="mat-elevation-z8">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -233,11 +235,16 @@
             <!-- Tasks -->
 
             <mat-spinner *ngIf='!tasks && !empty' [diameter]="100" class="mx-auto"></mat-spinner>
+
+            <!-- card in case of no tasks -->
             <mat-card class="text-center" *ngIf='empty && !tasks'>
                 <h4>{{empty}}</h4>
             </mat-card>
+
             <div *ngIf='tasks' class="row">
+
                 <div class="col-md-3 text-center">
+                    <!-- task search input box -->
                     <mat-form-field>
                         <input matInput placeholder="Search" type="text" [(ngModel)]="filter">
                     </mat-form-field>
@@ -251,30 +258,29 @@
 
 
                 <div class="col-md-3 text-center">
-                    <p> <b>SortBy</b> <i class="material-icons">
-                            filter_list
-                        </i></p>
+                    <!-- SortBy buttons -->
+                    <p> <b>SortBy</b> <i class="material-icons">filter_list </i></p>
+
                     <button mat-raised-button class="mat-elevation-z8 sortBtn" color='primary' matTooltip="SortBy Title" (click)="sort('title')">Title</button>
 
-                    <button mat-raised-button class="mat-elevation-z8 sortBtn" color='primary' matTooltip="SortBy Date" (click)="sort('createdOn')">Date
-                    </button>
+                    <button mat-raised-button class="mat-elevation-z8 sortBtn" color='primary' matTooltip="SortBy Date" (click)="sort('createdOn')">Date</button>
 
                 </div>
             </div>
 
             <hr>
 
-            <!-- for loop starts here -->
             <button mat-raised-button class="mat-elevation-z8 float-right" color='primary' matTooltip="Ctrl + Z" (click)='undo()'><i
                     class="material-icons">undo</i></button>
 
+            <!-- for loop starts here -->
             <div class="row" *ngFor='let task of tasks  | orderBy: key : reverse | filter:filter  | paginate: { itemsPerPage: 10, currentPage: p }'
                 style="margin-top:60px">
 
 
+                <!-- card for pusblic tasks -->
                 <div *ngIf="task.type === 'public'" class="mx-auto div-width">
 
-                    
                     <mat-card class="card mat-card-primary task-card mat-elevation-z8">
                         <h4 class="task-head">{{ task.title }}</h4>
                         <button mat-icon-button matTooltip="Edit" color="primary" *ngIf="userId === task.createdByUserId || userInfo.friends.includes(task.createdByUserId)"
@@ -316,6 +322,7 @@
                     </mat-card>
                 </div>
 
+                <!-- Card for private tasks of user -->
                 <div *ngIf="task.type === 'private' && userId === task.createdByUserId" class="mx-auto div-width">
 
                     <mat-card class="card mat-card-green mat-elevation-z8">
@@ -333,10 +340,7 @@
                             <span class="ml-auto"><b>{{ task.createdBy }}</b></span>
                             <span class="ml-auto"><b>{{ task.createdOn | date:'medium' }}</b></span>
                         </div>
-                        <!-- <div class="row">
-                            <span style="margin-left: 16px">Modified By:</span>
-                            <span class="ml-auto"><b>{{ task.modifiedBy }}</b></span>
-                        </div> -->
+
                         <hr>
                         <ul class="task-ul">
                             <li *ngFor='let subtask of task.tasks; let i = index'>
@@ -362,19 +366,23 @@
             <!-- end of task row -->
         </div>
         <div class="col-md-12 text-center">
-            <!-- pgination -->
+            <!-- pagination -->
             <pagination-controls (pageChange)="p = $event"></pagination-controls>
         </div>
 
     </div>
+
+    <!-- Add task Button -->
     <button class="mat-elevation-z8 add-task d-none d-md-block" color='primary' data-toggle="modal" data-target="#myModal" (click)="clear(); editModeOff()"
         matTooltip="Add a Task">Add Task
         <i class="material-icons" style="font-size : 14px">
             add
         </i></button>
+
+    <!-- add task button for mobile -->
     <button mat-mini-fab class="mat-elevation-z8 add-task-mobile d-xs-inline d-sm-inline d-md-none" color='primary' data-toggle="modal"
         (click)="clear(); editModeOff()" data-target="#myModal"><i class="material-icons" matTooltip="Add a Task">
             add
         </i></button>
-</div>
 
+</div>

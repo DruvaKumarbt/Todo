@@ -14,16 +14,16 @@ export class ChangePasswordComponent implements OnInit {
   public pass1: any;
   public pass2: any;
 
-  constructor( 
+  constructor(
     public appService: AppService,
     public router: Router,
     private _route: ActivatedRoute,
-    public snackBar: MatSnackBar,) { }
+    public snackBar: MatSnackBar, ) { }
 
   ngOnInit() {
   }
 
-  
+
   public validation: any = () => {
     if (this.pass1 === this.pass2) {
       if (this.pass1.length > 8) {
@@ -57,14 +57,16 @@ export class ChangePasswordComponent implements OnInit {
         userId: captureId,
         password: this.pass1
       }
+
       this.appService.changePasswordFunction(data)
         .subscribe((apiResponse) => {
 
           if (apiResponse.status === 200) {
+
             this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
               duration: 5000,
             });
-     
+
             setTimeout(() => {
 
               this.router.navigate(['/sign-in']);
@@ -85,7 +87,6 @@ export class ChangePasswordComponent implements OnInit {
           });
 
         });
-
     }
 
   }

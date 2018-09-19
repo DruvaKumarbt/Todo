@@ -37,7 +37,7 @@ export class SigninComponent implements OnInit {
 
   }
 
- 
+
   //Validations
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
@@ -51,53 +51,55 @@ export class SigninComponent implements OnInit {
 
   matcher = new MyErrorStateMatcher();
 
-
+  // Submit function
   submit() {
 
     this.progress = true;
 
+    // check for email
     if (this.email) {
 
+      // check for password 
       if (this.password.length >= 8) {
 
         let data = {
           email: this.email,
           password: this.password
         }
-  
+
         this.appService.signinFunction(data)
           .subscribe((apiResponse) => {
-  
+
             if (apiResponse.status === 200) {
-  
-  
+
+
               Cookie.set('authtoken', apiResponse.data.authToken);
-            
-  
+
+
               this.appService.setUserInfoInLocalStorage(apiResponse.data.userDetails);
-  
+
               this.router.navigate(['/home']);
-  
+
             } else if (apiResponse.status === 404) {
               this.progress = false;
               this.snackBar.open(`Email or Password wrong`, "Dismiss", {
                 duration: 5000,
               });
-  
+
             } else {
-  
+
               this.snackBar.open(`${apiResponse.message}`, "Dismiss", {
                 duration: 5000,
               });
-  
+
             }
-  
+
           }, (err) => {
-  
+
             this.snackBar.open(`some error occured`, "Dismiss", {
               duration: 5000,
             });
-  
+
           });
 
       } else {
@@ -105,14 +107,16 @@ export class SigninComponent implements OnInit {
         this.snackBar.open(`Make sure your password is more than 8 random characters`, "Dismiss", {
           duration: 5000,
         })
-      }
+
+      }// check for password ends here
+
     } else {
 
       this.snackBar.open(`Please enter a valid Email and Password`, "Dismiss", {
         duration: 5000,
       })
 
-    }
+    } // check for email ends here
 
   }
 

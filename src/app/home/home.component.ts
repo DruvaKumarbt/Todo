@@ -1,10 +1,9 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from "./../app.service";
 import { SocketService } from './../socket.service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
-// import * as ts from "./../../../node_modules/typescript";
 
 
 @Component({
@@ -14,7 +13,7 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
     providers: [SocketService]  //very important line if not included socket code will not hit for first time.
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
     //initializing p to one
     p: number = 1;
@@ -29,7 +28,7 @@ export class HomeComponent implements OnInit {
         this.reverse = !this.reverse;
     }
 
-    // invitaition mail
+    // invitaition mail variables
     public invitation: string;
     public mail: string;
 
@@ -86,6 +85,7 @@ export class HomeComponent implements OnInit {
 
     constructor(public SocketService: SocketService, public snackBar: MatSnackBar, public router: Router, public _route: ActivatedRoute, public appService: AppService) { }
 
+
     //checking for keypress to undo
     @HostListener('window:keyup', ['$event'])
 
@@ -120,16 +120,16 @@ export class HomeComponent implements OnInit {
 
         this.invitation = `http://localhost:4200/sign-in?userId=${this.userId}`;
 
-        
-        //Delay to ensure perfromance at OnInit
-        
-        setTimeout(() => {
-            this.checkForInvitation();
-        }, 2000);
+
+        //on purpose Delay to ensure perfromance at OnInit
 
         setTimeout(() => {
             this.getAllTasks();
         }, 1000);
+
+        setTimeout(() => {
+            this.checkForInvitation();
+        }, 2000);
 
         setTimeout(() => {
             this.getALLUsers();
@@ -138,7 +138,14 @@ export class HomeComponent implements OnInit {
         setTimeout(() => {
             this.getNotification(this.userId);
         }, 8000);
-        
+
+    }
+
+
+    ngOnDestroy() {
+
+        this.SocketService.exitSocket()
+
     }
 
 
@@ -149,7 +156,6 @@ export class HomeComponent implements OnInit {
             (data) => {
 
                 this.undoData = data
-
 
                 if (this.undoData.status == 200) {
 
@@ -177,6 +183,7 @@ export class HomeComponent implements OnInit {
                     this.snackBar.open(`${this.undoData.message}`, "Dismiss", {
                         duration: 2000,
                     });
+
                 } else {
 
                     this.snackBar.open(`Some Error occured`, "Dismiss", {
@@ -199,12 +206,14 @@ export class HomeComponent implements OnInit {
 
             });
 
-    }//end of get all users
+    }//end of get all users.
 
-    // create variable for task details
+
+    // create variable for task details (subtasks variables)
     createVariable() {
 
         for (var i = 0; i <= 9; i++) {
+
             for (var j = 1; j <= 5; j++) {
 
                 this[`detail${i}${j}`]
@@ -213,11 +222,11 @@ export class HomeComponent implements OnInit {
         }
     }
 
+
     // check to for validity
     public checkStatus: any = () => {
 
         if (Cookie.get('authtoken') === undefined || Cookie.get('authtoken') === '' || Cookie.get('authtoken') === null) {
-            console.log("in chexk stautus");
 
             this.router.navigate(['/sign-in']);
 
@@ -232,7 +241,7 @@ export class HomeComponent implements OnInit {
     } // end checkStatus
 
 
-
+    // socket event to verifyUser
     public verifyUserConfirmation: any = () => {
 
         this.SocketService.verifyUser()
@@ -246,6 +255,7 @@ export class HomeComponent implements OnInit {
     }
 
 
+    // socket event to get online user list
     public getOnlineUserList: any = () => {
 
         this.SocketService.onlineUserList()
@@ -260,6 +270,7 @@ export class HomeComponent implements OnInit {
                     this.userList.push(temp);
 
                 }
+
                 console.log('UserList =>', this.userList);
 
             }); // end online-user-list
@@ -273,8 +284,7 @@ export class HomeComponent implements OnInit {
         this.appService.getAllUsers().subscribe(
             data => {
 
-             this.users = data['data'];
-             
+                this.users = data['data'];
 
             }, (err) => {
 
@@ -288,7 +298,8 @@ export class HomeComponent implements OnInit {
 
             });
 
-    }//end of get all users
+    }//end of get all users.
+
 
     // get detail of current user
     getUserDetails(id) {
@@ -318,6 +329,9 @@ export class HomeComponent implements OnInit {
 
     }
 
+
+    // adding user to requested array of the friend .
+    //adding friend to request array of the user.
     addAsFriend(id, name) {
 
         // send friends request
@@ -458,6 +472,7 @@ export class HomeComponent implements OnInit {
 
     /////////////////////////////////////////Noyification related code//////////////////////////////////
 
+    // get notifications of the user
     public getNotify: any = () => {
 
         this.SocketService.notify(this.userId)
@@ -489,6 +504,8 @@ export class HomeComponent implements OnInit {
 
     }// end get message from a user 
 
+
+    // get notifications related task changes done by friends
     public getTaskChanges: any = () => {
 
         this.SocketService.taskChanges().subscribe((data) => {
@@ -504,13 +521,14 @@ export class HomeComponent implements OnInit {
                 // pushing data to notification array
                 this.notifications.push(message.message);
 
+                //playing notification sound.
                 this.audio = new Audio();
                 this.audio.src = "../../../assets/light.mp3";
                 this.audio.load();
                 this.audio.play();
 
                 this.getAllTasks();
-                this.getALLUsers();
+
                 this.notificationCount++;
 
             }
@@ -538,24 +556,24 @@ export class HomeComponent implements OnInit {
 
             data => {
 
-                if(data['status'] === 200){
+                if (data['status'] === 200) {
 
                     this.tasks = data['data'];
 
-                }else if(data['status']=== 404){
+                } else if (data['status'] === 404) {
 
                     this.empty = data['message']
 
-                }else{
+                } else {
 
                     this.snackBar.open(`some error occured`, "Dismiss", {
                         duration: 5000,
                     });
-    
+
                     setTimeout(() => {
                         this.router.navigate(['/500'])
                     }, 500);
-    
+
                 }
 
 
@@ -763,6 +781,7 @@ export class HomeComponent implements OnInit {
     }
 
 
+    // Main taask check function
     taskChecked(task, i) {
 
         let taskObj = task;
@@ -772,7 +791,6 @@ export class HomeComponent implements OnInit {
         setTimeout(() => {
 
             task.tasks.splice(i, 1)
-            console.log(taskObj);
 
             this.appService.editTask(taskObj).subscribe((apiResponse) => {
                 if (apiResponse.status === 200) {
@@ -827,47 +845,7 @@ export class HomeComponent implements OnInit {
 
     }
 
-    //function for pre render value to form for editing values
-    editValue(task) {
-
-        // setting this variable for passing to delete task function
-        this.taskDetailsToEdit = task;
-
-        this.editMode = true;
-
-        this.clear();
-
-        // this.count = this.taskDetailsToEdit.tasks.length;
-
-        this.title = task.title;
-        this.taskId = task.taskId
-        if (task.type == 'private') {
-            this.private = true
-        } else {
-            this.private = false;
-        }
-
-        let i = 1
-        task.tasks.map(x => {
-
-            this[`subtask${i}`] = x.task
-
-            x.subtask.filter(y => {
-                for (let j = 1; j <= 5; j++) {
-
-                    this[`detail${i - 1}${j}`] = x.subtask[j - 1]
-
-                }
-
-
-            })
-
-            i++
-
-        })
-
-    }
-
+    // Subtask check function
     subtaskChecked(task, i, j) {
 
         let taskObj = task;
@@ -875,7 +853,6 @@ export class HomeComponent implements OnInit {
         taskObj.modifiedBy = this.userInfo.firstName;
         taskObj.modifiedOn = Date.now();
         task.tasks[i].subtask.splice(j, 1)
-        console.log(taskObj);
 
         this.appService.editTask(taskObj).subscribe((apiResponse) => {
             if (apiResponse.status === 200) {
@@ -926,8 +903,50 @@ export class HomeComponent implements OnInit {
 
         });
 
+    }//end of subtask check.
+
+
+    //function for pre render value to form for editing values
+    editValue(task) {
+
+        // setting this variable for passing to delete task function
+        this.taskDetailsToEdit = task;
+
+        this.editMode = true;
+
+        this.clear();
+
+        // this.count = this.taskDetailsToEdit.tasks.length;
+
+        this.title = task.title;
+        this.taskId = task.taskId
+        if (task.type == 'private') {
+            this.private = true
+        } else {
+            this.private = false;
+        }
+
+        let i = 1
+        task.tasks.map(x => {
+
+            this[`subtask${i}`] = x.task
+
+            x.subtask.filter(y => {
+                for (let j = 1; j <= 5; j++) {
+
+                    this[`detail${i - 1}${j}`] = x.subtask[j - 1]
+
+                }
+
+            });
+
+            i++
+
+        });
+
     }
 
+    // delete task function
     deleteTask() {
 
         let taskObj = this.taskDetailsToEdit;
@@ -935,7 +954,6 @@ export class HomeComponent implements OnInit {
         taskObj.modifiedOn = Date.now();
 
         this.appService.deleteTask(taskObj).subscribe((apiResponse) => {
-            console.log(apiResponse);
 
             if (apiResponse.status === 200) {
 
@@ -984,10 +1002,10 @@ export class HomeComponent implements OnInit {
 
         });
 
-    }
+    }//end of delete task.
+
 
     //code to get last 10 notification
-
     getNotification(id) {
 
         this.appService.getUserNotification(id).subscribe(
@@ -1051,6 +1069,7 @@ export class HomeComponent implements OnInit {
         this.notificationCount = null;
     }
 
+    //code for mat-expansion panel in the modal for subtasks
     setStep(index: number) {
         this.step = index;
     }
@@ -1085,6 +1104,7 @@ export class HomeComponent implements OnInit {
         )
     }
 
+
     //copy to clipboard
     copyMessage(val: string) {
         let selBox = document.createElement('textarea');
@@ -1108,44 +1128,43 @@ export class HomeComponent implements OnInit {
     //check for invitation
     checkForInvitation() {
 
-        if(Cookie.get('inviteId')){
-            console.log(`Inside cookie Yummy`);
-            
-        let inviteId = Cookie.get('inviteId');
-        
-       this.appService.addInviteFriend(this.userId, inviteId).subscribe(
-        data=>{
-            if(data['status']=== 200){
+        if (Cookie.get('inviteId')) {
 
-                this.snackBar.open(`Friend added to friend's list`, "Dismiss", {
-                    duration: 5000,
-                });
+            let inviteId = Cookie.get('inviteId');
 
-                Cookie.delete('inviteId');
+            this.appService.addInviteFriend(this.userId, inviteId).subscribe(
+                data => {
+                    if (data['status'] === 200) {
 
-                  // sending notification
-                  let notifyObject = {
-                    senderName: this.userInfo.firstName,
-                    senderId: this.userId,
-                    receiverName: '',
-                    receiverId: inviteId,
-                    message: `You are now friend with ${this.userInfo.firstName}`,
-                    createdOn: new Date()
+                        this.snackBar.open(`Friend added to friend's list`, "Dismiss", {
+                            duration: 5000,
+                        });
+
+                        Cookie.delete('inviteId');
+
+                        // sending notification
+                        let notifyObject = {
+                            senderName: this.userInfo.firstName,
+                            senderId: this.userId,
+                            receiverName: '',
+                            receiverId: inviteId,
+                            message: `You are now friend with ${this.userInfo.firstName}`,
+                            createdOn: new Date()
+                        }
+
+                        this.SocketService.sendNotify(notifyObject);
+
+
+                    } else {
+
+                        this.snackBar.open(`Some error occured in adding invited friend to friend's list`, "Dismiss", {
+                            duration: 5000,
+                        });
+
+                    }
                 }
-                
-                this.SocketService.sendNotify(notifyObject);
-
-
-            }else{
-
-                this.snackBar.open(`Some error occured in adding invited friend to friend's list`, "Dismiss", {
-                    duration: 5000,
-                });
-
-            }
+            )
         }
-       )
-    }
 
     }
 
