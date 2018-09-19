@@ -529,9 +529,9 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.audio.load();
                 this.audio.play();
 
-                
+
                 this.notificationCount++;
-                
+
             }
             this.getAllTasks();
         }, (err) => {
@@ -1156,8 +1156,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
                         this.SocketService.sendNotify(notifyObject);
 
-                        this.getALLUsers();
-
+                        this.getUserDetails(this.userId);
 
                     } else {
 
