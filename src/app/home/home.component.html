@@ -141,10 +141,8 @@
                     <button mat-icon-button matTooltip="Notification" data-toggle="modal" data-target="#exampleModal"><i
                             class="material-icons" matBadge="{{notificationCount}}" color="primary" matBadgeOverlap="true" (click)='clearCount()'>
                             notifications_none </i></button>
-                    |
-                    <button mat-icon-button data-toggle="collapse" data-target="#share" aria-expanded="false" aria-controls="share">
-                        <i class="material-icons"> share </i>
-                    </button>
+                    | <button mat-icon-button data-toggle="collapse" data-target="#share" aria-expanded="false" aria-controls="share"><i class="material-icons"> share </i> </button>
+
                     |  <button mat-icon-button (click)="ngOnInit()" matTooltip="refresh"> <i class="material-icons">refresh </i></button>
                     | &nbsp;&nbsp;
                     <button mat-raised-button class="mat-elevation-z8" matTooltip="Logout" (click)="logout()">
