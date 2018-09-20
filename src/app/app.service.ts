@@ -10,8 +10,8 @@ import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 @Injectable()
 export class AppService {
 
-  public url = 'http://localhost:3000';
-  // private url ='http://todo-node.akshaypatil.online';
+  // public url = 'http://localhost:3000';
+  private url ='http://todo-node.akshaypatil.online';
 
 
   constructor(public http: HttpClient) { }

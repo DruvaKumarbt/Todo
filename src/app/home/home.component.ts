@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public subtask10: any;
 
     //notification related variables
-    public notifications: any[];
+    public notifications = [];
     public notificationCount: number = null;
     public audio: any;
 
@@ -118,8 +118,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.getUserDetails(this.userId);
 
-        this.invitation = `http://localhost:4200/sign-up?userId=${this.userId}`;
-        // this.invitation = `http://todo-angular.akshaypatil.online/sign-up?userId=${this.userId}`;
+        // this.invitation = `http://localhost:4200/sign-up?userId=${this.userId}`;
+        this.invitation = `http://todo-angular.akshaypatil.online/sign-up?userId=${this.userId}`;
 
 
         //on purpose Delay to ensure perfromance at OnInit
@@ -484,7 +484,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 this.snackBar.open(`${message.message}`, "Dismiss", {
                     duration: 5000,
                 });
-
+                console.log(`Inside get notify`)
                 // pushing data to notification array
                 this.notifications.push(message.message);
 

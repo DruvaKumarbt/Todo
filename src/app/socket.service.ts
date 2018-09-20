@@ -13,8 +13,8 @@ import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 @Injectable()
 export class SocketService {
 
-  private url = 'http://localhost:3000';
-  // private url ='http://todo-node.akshaypatil.online';
+  // private url = 'http://localhost:3000';
+  private url ='http://todo-node.akshaypatil.online';
 
 
   private socket;
@@ -104,7 +104,6 @@ export class SocketService {
     friendList.push(this.appService.getUserInfoFromLocalstorage().userId)
 
     notifyObject.receiverId = friendList
-    console.log(notifyObject);
 
     if (notifyObject.type === "public") {
       this.socket.emit('task-notify', notifyObject);
