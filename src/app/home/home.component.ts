@@ -118,8 +118,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
         this.getUserDetails(this.userId);
 
-        // this.invitation = `http://localhost:4200/sign-up?userId=${this.userId}`;
-        this.invitation = `http://todo-angular.akshaypatil.online/sign-up?userId=${this.userId}`;
+        this.invitation = `http://localhost:4200/sign-up?userId=${this.userId}`;
+        // this.invitation = `http://todo-angular.akshaypatil.online/sign-up?userId=${this.userId}`;
 
 
         //on purpose Delay to ensure perfromance at OnInit
