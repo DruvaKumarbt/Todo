@@ -12,7 +12,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/4.PNG?raw=true "Title")
 
-### Add/Delete/Update 
+### Profile
 
 ![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/5.PNG?raw=true "Title")
 
