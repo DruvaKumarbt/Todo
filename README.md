@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Screenshots
 ```
-![alt text](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG)
+![Screenshot](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG)
 ```
 
 ## Getting Started
