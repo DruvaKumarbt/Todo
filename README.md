@@ -6,15 +6,15 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ### User management
 
-![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG?raw=true "Title")
+![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/3.PNG?raw=true "Title")
 
 ### Home
 
-![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/1.PNG?raw=true "Title")
+![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/4.PNG?raw=true "Title")
 
 ### Add/Delete/Update 
 
-![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/2.PNG?raw=true "Title")
+![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/5.PNG?raw=true "Title")
 
 ## Getting Started
 
