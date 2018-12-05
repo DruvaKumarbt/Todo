@@ -2,6 +2,11 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.2.
 
+## Screenshots
+```
+![alt text](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG)
+```
+
 ## Getting Started
 
 To install the Angular CLI:
