@@ -3,9 +3,9 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.2.
 
 ## Screenshots
-```
-![Screenshot](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG)
-```
+
+![Alt text](https://github.com/laffingDragons/Screenshots/blob/master/Capture.PNG?raw=true "Title")
+
 
 ## Getting Started
 
